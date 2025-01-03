@@ -9,20 +9,20 @@ const Noticias = () => {
   useEffect(() => {
     const fetchNoticias = async () => {
       try {
-        const response = await fetch("https://cilada.onrender.com");
+        const response = await fetch("https://cilada.onrender.com/api/noticias");
         if (!response.ok) {
           throw new Error("Erro ao buscar notícias");
         }
         const data = await response.json();
-        console.log("Dados recebidos:", data); 
+        console.log("Dados recebidos:", data); // Log para verificar os dados recebidos
         if (data.articles) {
-          setNoticias(data.articles); 
+          setNoticias(data.articles); // Armazena as notícias recebidas
         } else {
           throw new Error("Formato inesperado de dados");
         }
       } catch (error) {
         console.error("Erro ao carregar notícias:", error.message);
-        setErro(error.message);
+        setErro("Não foi possível carregar as notícias. Tente novamente mais tarde.");
       } finally {
         setLoading(false);
       }
@@ -45,12 +45,14 @@ const Noticias = () => {
               {noticia.urlToImage && (
                 <img
                   src={noticia.urlToImage}
-                  alt={noticia.title}
+                  alt={noticia.title || "Imagem da notícia"}
                   className="noticia-thumbnail"
                 />
               )}
-              <h3 className="noticia-titulo">{noticia.title}</h3>
-              <p className="noticia-descricao">{noticia.description}</p>
+              <h3 className="noticia-titulo">{noticia.title || "Título indisponível"}</h3>
+              <p className="noticia-descricao">
+                {noticia.description || "Descrição não disponível"}
+              </p>
               <a
                 href={noticia.url}
                 target="_blank"
