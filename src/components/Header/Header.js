@@ -1,33 +1,37 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import "./Header.css";
 
 function Header() {
+  const location = useLocation(); // Obtém a rota atual
   const headerRef = useRef(null);
   const binaryElements = useRef([]);
-  const [menuActive, setMenuActive] = useState(false); // Estado do menu toggle
-  const [showHeader, setShowHeader] = useState(true); // Controla a visibilidade do header
-  const lastScrollY = useRef(0); // Armazena a posição anterior do scroll
-  const [activeSection, setActiveSection] = useState(""); // Controla a seção ativa
+  const [menuActive, setMenuActive] = useState(false);
+  const [showHeader, setShowHeader] = useState(true);
+  const lastScrollY = useRef(0);
+  const [activeSection, setActiveSection] = useState("");
+
+  const isSobrePage = location.pathname === "/sobre"; // Verifica se está na página "Sobre"
 
   useEffect(() => {
+    if (isSobrePage) return; // Não aplica o efeito binary na página "Sobre a Gente"
+
     const header = headerRef.current;
 
-    // Cria elementos "0" e "1" no header
     const localBinaryElements = [];
-    for (let i = 0; i < 300; i++) {
+    for (let i = 0; i < 90; i++) {
       const binary = document.createElement("div");
       binary.className = "binary";
-      binary.textContent = Math.random() > 0.5 ? "0" : "1"; // Alterna entre "0" e "1"
+      binary.textContent = Math.random() > 0.5 ? "0" : "1";
       binary.style.top = `${Math.random() * 100}%`;
       binary.style.left = `${Math.random() * 100}%`;
-      binary.style.animationDelay = `${Math.random() * 5}s`; // Delay para criar variação no tempo
+      binary.style.animationDelay = `${Math.random() * 5}s`;
       header.appendChild(binary);
       localBinaryElements.push(binary);
     }
 
     binaryElements.current = localBinaryElements;
 
-    // Animação ao mover o mouse no header
     const handleMouseMove = (e) => {
       const rect = header.getBoundingClientRect();
       const mouseX = e.clientX - rect.left;
@@ -47,10 +51,10 @@ function Header() {
           const offsetY = Math.sin(angle) * 50;
 
           binary.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-          binary.style.opacity = "0.5"; // Reduz a opacidade ao espalhar
+          binary.style.opacity = "0.5";
         } else {
           binary.style.transform = `translate(0, 0)`;
-          binary.style.opacity = "1"; // Retorna à opacidade normal
+          binary.style.opacity = "1";
         }
       });
     };
@@ -61,22 +65,22 @@ function Header() {
       header.removeEventListener("mousemove", handleMouseMove);
       localBinaryElements.forEach((binary) => header.removeChild(binary));
     };
-  }, []);
+  }, [isSobrePage]);
 
   useEffect(() => {
+    if (isSobrePage) return; // Não aplica a lógica de scroll na página "Sobre a Gente"
+
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
-      // Esconde ou mostra o header ao rolar para baixo ou para cima
       if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
-        setShowHeader(false); // Esconde o header ao rolar para baixo
+        setShowHeader(false);
       } else {
-        setShowHeader(true); // Mostra o header ao rolar para cima
+        setShowHeader(true);
       }
 
-      lastScrollY.current = currentScrollY; // Atualiza o último scroll
+      lastScrollY.current = currentScrollY;
 
-      // Identifica a seção ativa
       const sections = document.querySelectorAll("section");
       let currentSection = "";
 
@@ -96,7 +100,7 @@ function Header() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [isSobrePage]);
 
   const toggleMenu = () => {
     setMenuActive((prev) => !prev);
@@ -105,39 +109,62 @@ function Header() {
   return (
     <header
       ref={headerRef}
-      className={`header ${showHeader ? "visible" : "hidden"} ${
-        activeSection ? activeSection : "default"
-      }`}
+      className={`header ${isSobrePage ? "header-sobre" : ""} ${
+        showHeader ? "visible" : "hidden"
+      } ${activeSection && !isSobrePage ? activeSection : "default"}`}
     >
       <div className="animated-logo-container">
         <div className="logo-content">
           <img
-            src={require("../../assets/logoteste.png")}
-            alt="Logo Cilada"
+            src={
+              isSobrePage
+                ? require("../../assets/logo_ifam.png") // Logo IFAM para "Sobre a Gente"
+                : require("../../assets/logoteste.png") // Logo padrão
+            }
+            alt={isSobrePage ? "Logo IFAM" : "Logo Cilada"}
             className="logo-img"
           />
-          <span className="logo-text">C I L A D A</span>
+          
         </div>
       </div>
-      <button className="menu-button" onClick={toggleMenu}>
-        ☰
-      </button>
-      <nav className={`navigation ${menuActive ? "active" : ""}`}>
-        <ul className="nav-list">
-          <li>
-            <a href="#quem-somos">Quem Somos</a>
-          </li>
-          <li>
-            <a href="#principais-golpes">Principais Golpes</a>
-          </li>
-          <li>
-            <a href="#protecao">Como Se Proteger</a>
-          </li>
-          <li>
-            <a href="#o-que-fazer">O Que Fazer?</a>
-          </li>
-        </ul>
-      </nav>
+
+      {isSobrePage ? (
+        <nav className="navigation">
+          <ul className="nav-list">
+            <li>
+              <Link to="/">Início</Link>
+            </li>
+          </ul>
+        </nav>
+      ) : (
+        <>
+          <button className="menu-button" onClick={toggleMenu}>
+            ☰
+          </button>
+          <nav className={`navigation ${menuActive ? "active" : ""}`}>
+            <ul className="nav-list">
+              <li>
+                <a href="#introducao">Início</a>
+              </li>
+              <li>
+                <a href="#principais-golpes">Principais Golpes</a>
+              </li>
+              <li>
+                <a href="#o-que-fazer">O Que Fazer?</a>
+              </li>
+              <li>
+                <a href="#protecao">Como Se Proteger</a>
+              </li>
+              <li>
+                <a href="#noticias">Notícias</a>
+              </li>
+              <li>
+                <Link to="/sobre">Sobre o Grupo</Link>
+              </li>
+            </ul>
+          </nav>
+        </>
+      )}
     </header>
   );
 }
