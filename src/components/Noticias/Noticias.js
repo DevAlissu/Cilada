@@ -1,0 +1,70 @@
+import React, { useState, useEffect } from "react";
+import "./Noticias.css";
+
+const Noticias = () => {
+  const [noticias, setNoticias] = useState([]);
+  const [erro, setErro] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchNoticias = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/api/noticias");
+        if (!response.ok) {
+          throw new Error("Erro ao buscar notícias");
+        }
+        const data = await response.json();
+        console.log("Dados recebidos:", data); 
+        if (data.articles) {
+          setNoticias(data.articles); 
+        } else {
+          throw new Error("Formato inesperado de dados");
+        }
+      } catch (error) {
+        console.error("Erro ao carregar notícias:", error.message);
+        setErro(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNoticias();
+  }, []);
+
+  return (
+    <section className="noticias-container" id="noticias">
+      <h2 className="noticias-titulo">Últimas Notícias sobre Cibersegurança</h2>
+      {loading ? (
+        <p className="noticias-loading">Carregando notícias...</p>
+      ) : erro ? (
+        <p className="noticias-erro">{erro}</p>
+      ) : (
+        <div className="noticias-grid">
+          {noticias.slice(0, 3).map((noticia, index) => (
+            <div key={index} className="noticia-card">
+              {noticia.urlToImage && (
+                <img
+                  src={noticia.urlToImage}
+                  alt={noticia.title}
+                  className="noticia-thumbnail"
+                />
+              )}
+              <h3 className="noticia-titulo">{noticia.title}</h3>
+              <p className="noticia-descricao">{noticia.description}</p>
+              <a
+                href={noticia.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="noticia-link"
+              >
+                Leia mais
+              </a>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+};
+
+export default Noticias;

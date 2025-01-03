@@ -1,0 +1,98 @@
+.introducao-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(90deg, #060048,#2c0050, #4d0070);
+  color: #fff;
+  padding: 2rem;
+  box-sizing: border-box;
+  overflow-x: hidden; /* Impede que a largura extra crie o espaço branco */
+}
+
+.introducao-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  width: 100%;
+  flex-wrap: wrap; /* Permite quebrar linhas em telas menores */
+}
+
+.introducao-texto {
+  flex: 1;
+  padding-right: 2rem;
+  box-sizing: border-box;
+  text-align: justify; /* Ajusta o texto para justificado */
+  font-family: 'Poppins', sans-serif;
+}
+
+.introducao-texto h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.introducao-texto p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.btn-cta {
+  padding: 1rem 2rem;
+  background-color: #472367;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1.5rem;
+  display: inline-block; /* Deixa o botão ao lado do texto no desktop */
+  text-align: center; /* Centraliza o texto dentro do botão */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra inicial */
+}
+
+.btn-cta:hover {
+  background-color: #673692;
+  transform: scale(1.1); /* Aumenta o tamanho no hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Intensifica a sombra no hover */
+}
+
+.introducao-imagem {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.introducao-imagem img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+/* --- Responsividade --- */
+@media (max-width: 768px) {
+  .introducao-content {
+    flex-direction: column; /* Alinha verticalmente */
+    text-align: center;
+  }
+
+  .introducao-texto {
+    padding-right: 0;
+    margin-bottom: 1rem; /* Ajusta espaço entre texto e botão */
+  }
+
+  .btn-cta {
+    margin: 1rem auto 0; /* Centraliza o botão no mobile */
+    display: block; /* Garante centralização no mobile */
+  }
+
+  .introducao-imagem {
+    display: none; /* Remove a imagem no layout mobile */
+  }
+}

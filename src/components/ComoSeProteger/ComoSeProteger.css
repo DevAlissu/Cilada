@@ -1,0 +1,67 @@
+.como-se-proteger-container {
+    padding: 4rem 2rem;
+    background: linear-gradient(-250deg, #e5ffeb, #9dffa2, #e8ffdc);
+    text-align: center;
+  }
+  
+  .como-se-proteger-titulo {
+    font-size: 2.5rem;
+    font-family: 'Poppins', sans-serif;
+    margin-bottom: 2rem;
+    color: #333;
+  }
+  
+  .como-se-proteger-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    justify-items: center;
+  }
+  
+  .dica-card {
+    background: #92fe88;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .dica-card:hover {
+    transform: translateY(-10px); /* Animação ao passar o mouse */
+  }
+  
+  .dica-imagem {
+    width: 80px;
+    margin-bottom: 1rem;
+  }
+  .dica-link {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #333;
+    color: #fff;
+    font-size: 0.9rem;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+  
+  .dica-link:hover {
+    background-color: #555;
+  }
+  .dica-titulo {
+    font-size: 1.5rem;
+    font-family: 'Poppins', sans-serif;
+    margin: 1rem 0;
+    color: #555;
+  }
+  
+  .dica-descricao {
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    color: #777;
+    line-height: 1.5;
+  }
