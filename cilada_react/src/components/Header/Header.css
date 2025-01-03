@@ -1,0 +1,267 @@
+/* Header */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 1001;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: linear-gradient(-250deg, #060048, #2c0050, #4d0070);
+    color: white;
+    height: auto;
+    min-height: 80px;
+    box-shadow: 0px 4px 10px rgba(31, 4, 99, 0.5);
+    transition: transform 0.3s ease, opacity 0.3s ease, background 0.3s ease;
+}
+
+.header.hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.header.visible {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Estilos dinâmicos para cada seção */
+.header.quem-somos {
+
+    background: linear-gradient(-250deg, #060048, #2c0050, #4d0070);
+    .logo-text {
+    font-family: 'Lexend', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: rgb(255, 255, 255);
+    animation: fadeIn 2s ease-in-out;
+    white-space: nowrap;
+}
+}
+
+.header.principais-golpes {
+    background: linear-gradient(-250deg, #ffe4b5, #ffcc66);
+    .binary {
+        position: absolute;
+        font-size: 0.5rem;
+        font-weight: bold;
+        color: #7b6e05;
+        animation: fall 5s linear infinite;
+        z-index: 0;
+        opacity: 0.8;
+    }
+}
+
+.header.protecao {
+    background: linear-gradient(-250deg, #92fe88, rgb(4, 193, 4));
+    .binary {
+        position: absolute;
+        font-size: 0.5rem;
+        font-weight: bold;
+        color: #003d1f;
+        animation: fall 5s linear infinite;
+        z-index: 0;
+        opacity: 0.8;
+    }
+}
+
+.header.o-que-fazer {
+    background: linear-gradient(-250deg, #f9c8d0, #ff7e8b);
+    
+    .binary {
+        position: absolute;
+        font-size: 0.5rem;
+        font-weight: bold;
+        color: #820000;
+        animation: fall 5s linear infinite;
+        z-index: 0;
+        opacity: 0.8;
+    }
+}
+
+.header.noticias {
+    background: linear-gradient(-250deg, #f2faff, #d9eefa);
+    .nav-list li a {
+        text-decoration: none;
+        color: rgb(0, 0, 0);
+        font-size: 1.1rem;
+        font-weight: 700;
+        font-family: 'Jura', sans-serif;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    .logo-text {
+        font-family: 'Lexend', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: rgb(58, 57, 57);
+        animation: fadeIn 2s ease-in-out;
+        white-space: nowrap;
+    }
+    .binary {
+        position: absolute;
+        font-size: 0.5rem;
+        font-weight: bold;
+        color: #002d14;
+        animation: fall 5s linear infinite;
+        z-index: 0;
+        opacity: 0.8;
+    }
+}
+
+/* Pontinhos no header */
+.binary {
+    position: absolute;
+    font-size: 0.5rem;
+    font-weight: bold;
+    color: #a4fda4;
+    animation: fall 5s linear infinite;
+    z-index: 0;
+    opacity: 0.8;
+}
+
+/* Animação de queda */
+@keyframes fall {
+    0% {
+        transform: translateY(-100%);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(5vh);
+        opacity: 0;
+    }
+}
+
+/* Logo Animada e Texto */
+.animated-logo-container {
+    display: flex;
+    align-items: center;
+    z-index: 1;
+}
+
+.logo-content {
+    display: flex;
+    align-items: center;
+}
+
+.logo-img {
+    width: 40px;
+    height: auto;
+    margin-right: 1rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+.logo-text {
+    font-family: 'Lexend', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: rgb(255, 255, 255);
+    animation: fadeIn 2s ease-in-out;
+    white-space: nowrap;
+}
+
+/* Botão de Menu (Mobile) */
+.menu-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    display: none;
+    z-index: 1002;
+    position: relative;
+}
+
+@media (max-width: 768px) {
+    .menu-button {
+        display: block;
+        position: relative;
+        z-index: 1003;
+    }
+
+    .navigation {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: linear-gradient(90deg, #2a3b8f, #4127a7);
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+        box-shadow: 0px 4px 10px rgba(31, 4, 99, 0.5);
+        z-index: 1002;
+        transform: translateY(-100%);
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+
+    .navigation.active {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .nav-list {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+}
+
+/* Navegação */
+.navigation {
+    display: flex;
+    align-items: center;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.nav-list {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+}
+
+.nav-list li a {
+    text-decoration: none;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-family: 'Jura', sans-serif;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.nav-list li a:hover {
+    color: #ffcc00;
+    transform: scale(1.15);
+}
+
+/* Animações */
+@keyframes float {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
