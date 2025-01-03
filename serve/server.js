@@ -13,7 +13,7 @@ app.use(
 );
 
 // Sua API Key da NewsAPI
-const API_KEY = "3237b7e7ced247a1bcbdb1fa04977c2f";
+const API_KEY = process.env.NEWS_API_KEY || "3237b7e7ced247a1bcbdb1fa04977c2f";
 
 // Rota para buscar notícias
 app.get("/api/noticias", async (req, res) => {
@@ -27,9 +27,21 @@ app.get("/api/noticias", async (req, res) => {
       },
     });
 
+    const allArticles = response.data.articles;
+
+    // Filtro para verificar palavras-chave nos títulos ou descrições
+    const filteredArticles = allArticles.filter((article) => {
+      const keywords = ["cybersecurity", "ransomware", "phishing", "hacking", "hacker"];
+      const contentToCheck = `${article.title || ""} ${article.description || ""}`;
+
+      return keywords.some((keyword) =>
+        contentToCheck.toLowerCase().includes(keyword)
+      );
+    });
+
     res.json({
       status: "success",
-      articles: response.data.articles,
+      articles: filteredArticles,
     });
   } catch (error) {
     console.error("Erro ao buscar notícias:", error.message); // Log do erro
