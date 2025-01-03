@@ -9,7 +9,7 @@ const Noticias = () => {
   useEffect(() => {
     const fetchNoticias = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/noticias");
+        const response = await fetch("https://cilada.onrender.com");
         if (!response.ok) {
           throw new Error("Erro ao buscar notícias");
         }
