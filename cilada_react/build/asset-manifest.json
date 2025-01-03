@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.dd5b5ed1.css",
-    "main.js": "/static/js/main.00bbead8.js",
+    "main.js": "/static/js/main.f7589c26.js",
     "static/js/488.4107cc23.chunk.js": "/static/js/488.4107cc23.chunk.js",
     "static/media/golpe2.png": "/static/media/golpe2.b3b54e632f417b31c22f.png",
     "static/media/golpe3.png": "/static/media/golpe3.6dc3f115e114f6bfaea4.png",
@@ -17,11 +17,11 @@
     "static/media/lock-icon.png": "/static/media/lock-icon.d009ed9134b79956722d.png",
     "index.html": "/index.html",
     "main.dd5b5ed1.css.map": "/static/css/main.dd5b5ed1.css.map",
-    "main.00bbead8.js.map": "/static/js/main.00bbead8.js.map",
+    "main.f7589c26.js.map": "/static/js/main.f7589c26.js.map",
     "488.4107cc23.chunk.js.map": "/static/js/488.4107cc23.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.dd5b5ed1.css",
-    "static/js/main.00bbead8.js"
+    "static/js/main.f7589c26.js"
   ]
 }
