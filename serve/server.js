@@ -20,7 +20,7 @@ app.get("/api/noticias", async (req, res) => {
   try {
     const response = await axios.get("https://newsapi.org/v2/everything", {
       params: {
-        q: "cybersecurity OR deepfake OR ransomware OR phishing OR hacking",
+        q: "cybersecurity OR ransomware OR phishing OR hacking OR hacker",
         language: "pt",
         sortBy: "publishedAt",
         apiKey: API_KEY,
