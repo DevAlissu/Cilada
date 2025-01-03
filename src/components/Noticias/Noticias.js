@@ -9,20 +9,33 @@ const Noticias = () => {
   useEffect(() => {
     const fetchNoticias = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/noticias");
-        if (!response.ok) {
-          throw new Error("Erro ao buscar notícias");
+        // Verifica se a variável de ambiente está definida
+        if (!process.env.REACT_APP_BACKEND_URL) {
+          throw new Error(
+            "A URL do backend não está definida. Verifique o arquivo .env."
+          );
         }
+
+        const response = await fetch(
+          `${process.env.REACT_APP_BACKEND_URL}/api/noticias`
+        );
+        if (!response.ok) {
+          throw new Error(`Erro ao buscar notícias: ${response.statusText}`);
+        }
+
         const data = await response.json();
-        console.log("Dados recebidos:", data); 
-        if (data.articles) {
-          setNoticias(data.articles); 
+        console.log("Dados recebidos:", data);
+
+        if (data.articles && Array.isArray(data.articles)) {
+          setNoticias(data.articles);
         } else {
-          throw new Error("Formato inesperado de dados");
+          throw new Error("Formato inesperado de dados da API");
         }
       } catch (error) {
         console.error("Erro ao carregar notícias:", error.message);
-        setErro(error.message);
+        setErro(
+          "Não foi possível carregar as notícias. Tente novamente mais tarde."
+        );
       } finally {
         setLoading(false);
       }
@@ -45,12 +58,14 @@ const Noticias = () => {
               {noticia.urlToImage && (
                 <img
                   src={noticia.urlToImage}
-                  alt={noticia.title}
+                  alt={noticia.title || "Imagem da notícia"}
                   className="noticia-thumbnail"
                 />
               )}
-              <h3 className="noticia-titulo">{noticia.title}</h3>
-              <p className="noticia-descricao">{noticia.description}</p>
+              <h3 className="noticia-titulo">{noticia.title || "Título não disponível"}</h3>
+              <p className="noticia-descricao">
+                {noticia.description || "Descrição não disponível"}
+              </p>
               <a
                 href={noticia.url}
                 target="_blank"
