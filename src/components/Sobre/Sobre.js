@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom"; // Adicionado para o botão "Voltar ao Início"
 import "./Sobre.css";
 import alison from "../../assets/image.png";
 import cairo from "../../assets/cairo.png";
@@ -13,6 +14,13 @@ import iso9001 from "../../assets/iso9001.jpg";
 const Sobre = () => {
   return (
     <div className="sobre-container">
+      {/* Botão de Voltar ao Início */}
+      <div className="voltar-inicio">
+        <Link to="/">
+          <button className="botao-voltar">Voltar ao Início da Página</button>
+        </Link>
+      </div>
+
       {/* Seção sobre o grupo */}
       <section className="sobre-intro">
         <h1 className="sobre-titulo">Sobre o grupo</h1>

@@ -180,7 +180,13 @@
         position: relative;
         z-index: 1003;
     }
+    .nav-list.single-link {
+        justify-content: center; /* Certifica-se de centralizar no mobile */
+    }
 
+    .nav-list.single-link li a {
+        font-size: 1.1rem; /* Ajusta o tamanho da fonte para mobile */
+    }
     .navigation {
         position: absolute;
         top: 100%;
@@ -269,6 +275,9 @@
     background: linear-gradient(-250deg, #3d4e40, #022b08, #1f4e11);
     color: #ffffff;
     box-shadow: 0px 4px 10px rgba(0, 80, 158, 0.5);
+    transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
   }
   
   .header-sobre .logo-text {
@@ -299,3 +308,103 @@
     height: auto;
     animation: float 3s ease-in-out infinite; /* Mantém a animação de flutuar */
   }
+  /* Ajuste para o link único no header da página Sobre */
+.nav-list.single-link {
+    justify-content: center; /* Centraliza o link no header */
+    display: flex;
+    padding: 0;
+    margin: 0;
+    flex-direction: column; /* Torna o menu mais responsivo */
+  }
+  
+  .nav-list.single-link li {
+    list-style: none;
+    text-align: center; /* Garante que o link fique centralizado */
+  }
+  
+  .nav-list.single-link li a {
+    text-decoration: none;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 900;
+    font-family: 'Fjalla One', sans-serif;
+    transition: transform 0.3s ease, color 0.3s ease;
+  }
+  
+  .nav-list.single-link li a:hover {
+    color: #ffcc00;
+    transform: scale(1.1);
+  }
+  
+  /* Responsividade para mobile */
+  @media (max-width: 768px) {
+    .nav-list.single-link {
+      justify-content: center; /* Certifica-se de centralizar no mobile */
+    }
+  
+    .nav-list.single-link li a {
+      font-size: 1.1rem; /* Ajusta o tamanho da fonte para mobile */
+    }
+  }
+
+  .header.hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  .header.visible {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  /* Força o header a ser sempre visível na página 'Sobre' */
+  .header-sobre {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  .header-sobre .nav-list.single-link {
+    justify-content: center; /* Certifica-se de centralizar o link */
+    display: flex;
+    padding: 0;
+    margin: 0;
+}
+@media (max-width: 768px) {
+    .header-sobre .nav-list.single-link li a {
+        font-size: 1.1rem;
+    }
+}/* Força a visibilidade do link único no Sobre */
+.header-sobre .nav-list.single-link {
+    justify-content: center;
+    display: flex;
+    padding: 0;
+    margin: 0;
+}.header-sobre .nav-list.single-link li a {
+    text-decoration: none;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 900;
+    font-family: 'Fjalla One', sans-serif;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+/* Ajustes para mobile no Sobre */
+@media (max-width: 768px) {
+    .header-sobre .nav-list.single-link li a {
+        font-size: 1.1rem; /* Ajusta o tamanho da fonte para mobile */
+    }
+}
+
+/* Força o header sempre visível no Sobre */
+.header-sobre {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+/* Esconde o toggle no Sobre (já que ele não é necessário) */
+.header-sobre .menu-button {
+    display: none; /* Oculta o botão toggle no Sobre */
+}

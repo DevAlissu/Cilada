@@ -13,8 +13,9 @@ function Header() {
 
   const isSobrePage = location.pathname === "/sobre"; // Verifica se está na página "Sobre"
 
+  // Efeito de animação binária (somente em páginas que não sejam "Sobre")
   useEffect(() => {
-    if (isSobrePage) return; // Não aplica o efeito binary na página "Sobre a Gente"
+    if (isSobrePage) return;
 
     const header = headerRef.current;
 
@@ -67,8 +68,9 @@ function Header() {
     };
   }, [isSobrePage]);
 
+  // Efeito de scroll (somente em páginas que não sejam "Sobre")
   useEffect(() => {
-    if (isSobrePage) return; // Não aplica a lógica de scroll na página "Sobre a Gente"
+    if (isSobrePage) return;
 
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -110,7 +112,7 @@ function Header() {
     <header
       ref={headerRef}
       className={`header ${isSobrePage ? "header-sobre" : ""} ${
-        showHeader ? "visible" : "hidden"
+        isSobrePage ? "visible" : showHeader ? "visible" : "hidden"
       } ${activeSection && !isSobrePage ? activeSection : "default"}`}
     >
       <div className="animated-logo-container">
@@ -124,13 +126,12 @@ function Header() {
             alt={isSobrePage ? "Logo IFAM" : "Logo Cilada"}
             className="logo-img"
           />
-          
         </div>
       </div>
 
       {isSobrePage ? (
         <nav className="navigation">
-          <ul className="nav-list">
+          <ul className="nav-list single-link">
             <li>
               <Link to="/">Início</Link>
             </li>

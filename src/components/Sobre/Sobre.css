@@ -98,3 +98,39 @@
     font-size: 0.9rem;
   }
 }
+/* Botão de Voltar ao Início */
+.voltar-inicio {
+  display: none; /* Oculta o botão por padrão */
+  justify-content: center;
+  margin-top: -1rem; /* Coloca mais próximo do header */
+  margin-bottom: 2rem; /* Espaçamento inferior */
+}
+
+/* Estilo do botão */
+.botao-voltar {
+  background-color: #006400; /* Verde escuro */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.botao-voltar:hover {
+  background-color: #004d00; /* Verde mais escuro */
+  transform: scale(1.05);
+}
+
+.botao-voltar:active {
+  background-color: #003300; /* Verde ainda mais escuro */
+}
+
+/* Exibir apenas em dispositivos móveis */
+@media (max-width: 768px) {
+  .voltar-inicio {
+    display: flex; /* Exibe o botão apenas em telas menores */
+  }
+}
