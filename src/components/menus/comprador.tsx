@@ -1,6 +1,5 @@
+// src/components/menus/comprador.tsx
 import React from 'react';
-import Padrao from '@/components/template/layout/padrao';
-import { LiaFileInvoiceSolid } from 'react-icons/lia';
 import {
   Plus,
   HomeIcon,
@@ -8,10 +7,27 @@ import {
   Settings,
   LayoutDashboardIcon,
 } from 'lucide-react';
-import HistoricoCompra from '@/components/corpo/comprador/historicoCompra';
-import NovaCompra from '@/components/corpo/comprador/novaCompra';
-import DashBoard from '@/components/corpo/comprador/DashBoard';
-const menus = [
+import { LiaFileInvoiceSolid } from 'react-icons/lia';
+
+export type SubMenuItem = {
+  name: string;
+  href: string;
+  icon: React.ElementType;
+};
+
+export type MenuItem = {
+  name: string;
+  href?: string;
+  icon?: React.ElementType;
+  subItems?: SubMenuItem[];
+};
+
+export type MenuSection = {
+  titulo: string;
+  items: MenuItem[];
+};
+
+export const menus: MenuSection[] = [
   {
     titulo: 'DashBoard',
     items: [
@@ -33,9 +49,15 @@ const menus = [
         subItems: [],
       },
       {
-        name: 'historico de Compra',
+        name: 'Histórico de Compra',
         href: '/compras/historicoCompra',
         icon: LiaFileInvoiceSolid,
+        subItems: [],
+      },
+      {
+        name: 'Requisições de Compra',
+        href: '/compras/requisicoes-compra',
+        icon: LayoutDashboardIcon,
         subItems: [],
       },
     ],
@@ -45,8 +67,8 @@ const menus = [
     items: [
       {
         name: 'Opções',
-        icon: Settings,
         href: '',
+        icon: Settings,
         subItems: [
           {
             name: 'Perfil',
@@ -55,7 +77,7 @@ const menus = [
           },
           {
             name: 'Segurança',
-            href: '/configuracoes/security',
+            href: '/compras/configuracoes/security',
             icon: HomeIcon,
           },
         ],
@@ -63,28 +85,3 @@ const menus = [
     ],
   },
 ];
-interface PageSidebarProps {
-  tela: string; // ou o tipo que você espera para 'tela'
-}
-const PageSidebar: React.FC<PageSidebarProps> = ({ tela }) => {
-  return (
-    <div className="flex w-full    flex-col bg-muted/40">
-      {/* inicio da tela desktop */}
-      <aside
-        className="fixed insert-y-0  bg-gray-400  left-0 z-10  h-full w-full 
-                   flex "
-      >
-        {tela === 'historicoCompra' ? (
-          <Padrao menus={menus} tela={tela} Corpo={HistoricoCompra} />
-        ) : null}
-        {tela === 'novaCompra' ? (
-          <Padrao menus={menus} tela={tela} Corpo={NovaCompra} />
-        ) : null}
-        {tela === 'dashBoard' ? (
-          <Padrao menus={menus} tela={tela} Corpo={DashBoard} />
-        ) : null}
-      </aside>
-    </div>
-  );
-};
-export default PageSidebar;

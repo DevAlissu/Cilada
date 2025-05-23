@@ -1109,11 +1109,8 @@ CREATE UNIQUE INDEX "uqcof_descricao" ON "cad_conta_financeira"("cof_descricao")
 -- CreateIndex
 CREATE UNIQUE INDEX "uqgcc_descricao" ON "cad_grupo_centro_custo"("gcc_descricao");
 
--- CreateIndex
-CREATE INDEX "idx_dbclien_codcli_trgm" ON "dbclien" USING GIN ("codcli" gin_trgm_ops);
-
--- CreateIndex
-CREATE INDEX "idx_dbclien_nome_trgm" ON "dbclien" USING GIN ("nome" gin_trgm_ops);
+CREATE INDEX "idx_dbclien_codcli_trgm" ON "dbclien" USING GIN ("codcli" public.gin_trgm_ops);
+CREATE INDEX "idx_dbclien_nome_trgm" ON "dbclien" USING GIN ("nome" public.gin_trgm_ops);
 
 -- CreateIndex
 CREATE INDEX "xif141dbctel" ON "dbctel"("cod_credor");

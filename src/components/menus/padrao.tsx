@@ -55,7 +55,7 @@ import Telas from '@/components/corpo/admin/controleAcesso/telas';
 import Usuarios from '@/components/corpo/admin/controleAcesso/usuarios';
 import HistoricoNF from '@/components/corpo/faturamento/historicoNF';
 import NovoFaturamento from '@/components/corpo/faturamento/novoFaturamento';
-import DashBoardCompras from '@/components/corpo/comprador/DashBoard';
+import RequisicoesCompra from '@/components/corpo/comprador/RequisicoesCompra/';
 import HistoricoCompra from '@/components/corpo/comprador/historicoCompra';
 import NovaCompra from '@/components/corpo/comprador/novaCompra';
 
@@ -262,10 +262,10 @@ const menus = [
         corpo: '',
         subItems: [
           {
-            name: 'Dashboard',
-            href: '/compras/dashBoard',
+            name: 'Requisições de Compra',
+            href: '/compras/requisicoes-compra',
             icon: LayoutDashboard,
-            corpo: DashBoardCompras,
+            corpo: RequisicoesCompra,
           },
           {
             name: 'Histórico de Compras',
@@ -321,12 +321,13 @@ const PageSidebar: React.FC<PageSidebarProps> = ({ tela, permissoes }) => {
   const corpoAtual = encontrarCorpoPorTela(tela, valorF);
 
   React.useEffect(() => {
-  const permissoesAtualizadas = [
-    ...(permissoes ?? []), 
-    '/compras/dashBoard',   
-    '/comprador/historicoCompra',  // LEMBRAR DE REMOVER AS PERMISSOES ATUALIZADAS E RETORNAR PARA A VARIAVEL PERMISSOES
-    '/comprador/novaCompra',       
-  ];
+    const permissoesAtualizadas = [
+      ...(permissoes ?? []),
+      '/compras/dashBoard',
+      '/comprador/historicoCompra',
+      '/comprador/novaCompra',
+      '/compras/requisicoes-compra',
+    ];
     const novoValorF = menus.map((menu) => ({
       ...menu,
       items: menu.items

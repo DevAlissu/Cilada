@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model arm_it_transferencia {
@@ -102,6 +103,26 @@ model cad_unidade_melo {
   unm_nome  String  @db.VarChar(30)
   unm_sigla String  @db.VarChar(5)
   unm_cnpj  String  @db.VarChar(14)
+}
+
+model Dbcompras {
+  id                Int       @id @default(autoincrement())
+  ordemCompra       String?   @map("ordem_compra")
+  dataOrdem         DateTime? @map("data_ordem") @db.Date
+  statusOrdem       String?   @map("status_ordem")
+  requisicao        String?
+  versao            Int?
+  tipo              String?
+  dataRequisicao    DateTime? @map("data_requisicao") @db.Date
+  statusRequisicao  String?   @map("status_requisicao")
+  fornecedorCodigo  String?   @map("fornecedor_codigo")
+  fornecedorNome    String?   @map("fornecedor_nome")
+  fornecedorCpfCnpj String?   @map("fornecedor_cpf_cnpj")
+  compradorNome     String?   @map("comprador_nome")
+  localEntrega      String?   @map("local_entrega")
+  destino           String?
+
+  @@map("dbcompras")
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
