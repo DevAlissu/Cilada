@@ -1,0 +1,1272 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model arm_it_transferencia {
+  itt_tra_id        Int
+  itt_codprod       String            @db.VarChar(6)
+  itt_qtd           Decimal?          @db.Decimal(38, 0)
+  dbprod            dbprod            @relation(fields: [itt_codprod], references: [codprod])
+  arm_transferencia arm_transferencia @relation(fields: [itt_tra_id], references: [tra_id])
+
+  @@id([itt_tra_id, itt_codprod])
+}
+
+model arm_transferencia {
+  tra_id                                                        Int                    @id(map: "pkarm_transferencia_id")
+  tra_arm_id_origem                                             Int?
+  tra_arm_id_destino                                            Int?
+  tra_codusr_emissao                                            String?                @db.VarChar(4)
+  tra_codusr_envio                                              String?                @db.VarChar(4)
+  tra_codusr_recebimento                                        String?                @db.VarChar(4)
+  tra_data                                                      DateTime?              @db.Date
+  tra_transp                                                    String?                @db.VarChar(5)
+  tra_pedido                                                    String?                @db.VarChar(100)
+  tra_obs                                                       String?                @db.VarChar(150)
+  tra_status                                                    String?                @db.VarChar(1)
+  tra_cancel                                                    String?                @db.VarChar(1)
+  arm_it_transferencia                                          arm_it_transferencia[]
+  cad_armazem_arm_transferencia_tra_arm_id_destinoTocad_armazem cad_armazem?           @relation("arm_transferencia_tra_arm_id_destinoTocad_armazem", fields: [tra_arm_id_destino], references: [arm_id], onDelete: NoAction, onUpdate: NoAction, map: "fkarm_transferencia_destino")
+  cad_armazem_arm_transferencia_tra_arm_id_origemTocad_armazem  cad_armazem?           @relation("arm_transferencia_tra_arm_id_origemTocad_armazem", fields: [tra_arm_id_origem], references: [arm_id], onDelete: NoAction, onUpdate: NoAction, map: "fkarm_transferencia_origem")
+}
+
+model cad_armazem {
+  arm_id                                                              Int                   @id(map: "pk_cad_armazem")
+  arm_descricao                                                       String?               @unique(map: "uk_cad_armazem_descricao") @db.VarChar(15)
+  arm_serie                                                           String?               @db.VarChar(3)
+  arm_iest                                                            String?               @db.VarChar(20)
+  arm_status                                                          String?               @db.VarChar(1)
+  arm_logradouro                                                      String?               @db.VarChar(50)
+  arm_numero                                                          String?               @db.VarChar(5)
+  arm_complemento                                                     String?               @db.VarChar(50)
+  arm_bairro                                                          String?               @db.VarChar(30)
+  arm_cep                                                             String?               @db.VarChar(10)
+  arm_municipio                                                       String?               @db.VarChar(30)
+  arm_uf                                                              String?               @db.VarChar(2)
+  arm_custo                                                           Decimal?              @db.Decimal
+  arm_transferencia_arm_transferencia_tra_arm_id_destinoTocad_armazem arm_transferencia[]   @relation("arm_transferencia_tra_arm_id_destinoTocad_armazem")
+  arm_transferencia_arm_transferencia_tra_arm_id_origemTocad_armazem  arm_transferencia[]   @relation("arm_transferencia_tra_arm_id_origemTocad_armazem")
+  dbestoque                                                           dbestoque[]
+  dbestoque_movimento                                                 dbestoque_movimento[]
+}
+
+model cad_centro_custo {
+  cec_id                 Int                    @id(map: "pkcec_id")
+  cec_gcc_id             Int
+  cec_descricao          String                 @unique(map: "uqcec_descricao") @db.VarChar(100)
+  cad_grupo_centro_custo cad_grupo_centro_custo @relation(fields: [cec_gcc_id], references: [gcc_id], onDelete: NoAction, onUpdate: NoAction, map: "fkcec_gcc_id")
+  cad_conta_financeira   cad_conta_financeira[]
+}
+
+model cad_conta_financeira {
+  cof_id           Int              @id(map: "pkcod_id")
+  cof_cec_id       Int
+  cof_descricao    String           @unique(map: "uqcof_descricao") @db.VarChar(100)
+  cof_operacional  String           @default("S") @db.VarChar(1)
+  cad_centro_custo cad_centro_custo @relation(fields: [cof_cec_id], references: [cec_id], onDelete: NoAction, onUpdate: NoAction, map: "fkcof_cec_id")
+}
+
+model cad_credor_regra_faturamento {
+  crf_id                         String @id(map: "pkcredorregra_fat") @db.VarChar(5)
+  desc_icms_sufra                Int
+  desc_icms_sufra_piscofins      Int
+  piscofins_365                  Int
+  piscofins_925                  Int
+  piscofins_1150                 Int
+  piscofins_1310                 Int
+  desc_icms_sufra_st             Int
+  desc_piscofins_st              Int
+  acres_piscofins_st             Int
+  desc_icms_sufra_importado      Int
+  cobrar_ipi_importado           Int
+  frete                          Int
+  basereduzida_st                Int
+  basereduzida_icms              Int
+  desc_icms_sufra_base           Int
+  desc_icms_sufra_importado_base Int
+}
+
+model cad_grupo_centro_custo {
+  gcc_id           Int                @id
+  gcc_descricao    String             @unique(map: "uqgcc_descricao") @db.VarChar(100)
+  cad_centro_custo cad_centro_custo[]
+}
+
+model cad_unidade_melo {
+  unm_id    Decimal @id @db.Decimal(38, 0)
+  unm_nome  String  @db.VarChar(30)
+  unm_sigla String  @db.VarChar(5)
+  unm_cnpj  String  @db.VarChar(14)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model dadosempresa {
+  cgc                  String? @db.VarChar(18)
+  inscricaoestadual    String? @db.VarChar(14)
+  nomecontribuinte     String? @db.VarChar(35)
+  municipio            String? @db.VarChar(30)
+  uf                   String? @db.VarChar(2)
+  fax                  String? @db.VarChar(16)
+  codigoconvenio       String? @db.VarChar(1)
+  codigonatureza       String? @db.VarChar(1)
+  codigofinalidade     String? @db.VarChar(1)
+  logradouro           String? @db.VarChar(34)
+  numero               String? @db.VarChar(5)
+  complemento          String? @db.VarChar(22)
+  bairro               String? @db.VarChar(15)
+  cep                  String? @db.VarChar(10)
+  contato              String? @db.VarChar(28)
+  telefone             String? @db.VarChar(16)
+  suframa              String? @db.VarChar(12)
+  email                String? @db.VarChar(50)
+  inscricaoestadual_07 String? @db.VarChar(14)
+  inscricaomunicipal   String? @db.VarChar(14)
+  id_token             String? @db.VarChar(6)
+  token                String? @db.VarChar(36)
+
+  @@ignore
+}
+
+model dbanalise_gpxcurva {
+  codgpp       String   @db.VarChar(5)
+  diasprojecao Int?     @default(60)
+  diasdemanda  Int?     @default(90)
+  curva        String   @db.VarChar(1)
+  dbgpprod     dbgpprod @relation(fields: [codgpp], references: [codgpp], onDelete: NoAction, onUpdate: NoAction, map: "xdbanalisecodgpp")
+
+  @@id([codgpp, curva], map: "xdbanalisecodgppcurva")
+}
+
+model dbbairro {
+  codbairro         String  @id @db.VarChar(5)
+  codzona           String  @db.VarChar(3)
+  descr             String  @db.VarChar(70)
+  uf                String  @db.VarChar(2)
+  cidade            String  @db.VarChar(70)
+  bai_nu_sequencial BigInt?
+  codmunicipio      String  @db.VarChar(7)
+  codpais           Int
+  SANKHYA_ID        String? @db.VarChar(5)
+  dbzona            dbzona  @relation(fields: [codzona], references: [codzona])
+}
+
+model dbbanco_cobranca {
+  banco String @id @db.VarChar(3)
+  nome  String @db.VarChar(255)
+}
+
+model dbcclien {
+  codcc String  @id @db.VarChar(5)
+  descr String? @db.VarChar(100)
+}
+
+model dbccusto {
+  cod_ccusto String  @id @db.VarChar(4)
+  descr      String? @db.VarChar(20)
+  tipo       String? @db.VarChar(1)
+}
+
+model dbcest {
+  id        Int     @id @default(autoincrement())
+  cest      String  @db.VarChar(7)
+  ncm       String? @db.VarChar(8)
+  segmento  String? @db.VarChar(100)
+  descricao String? @db.VarChar(1000)
+}
+
+model dbcfop_n {
+  cfop        String  @id @db.VarChar(4)
+  descr       String? @db.VarChar(255)
+  cfopinverso String? @db.VarChar(4)
+  excecao     String? @db.VarChar(1)
+}
+
+model dbclassefornecedor {
+  codcf String @id @db.VarChar(5)
+  descr String @db.VarChar(30)
+}
+
+model dbclassevendedor {
+  codcv  String   @id @db.VarChar(3)
+  descr  String?  @db.VarChar(20)
+  dbvend dbvend[]
+}
+
+model dbclassificacao_fiscal {
+  codcla    Decimal? @db.Decimal
+  ipi       Decimal? @default(0) @db.Decimal(6, 2)
+  pis       Decimal? @default(0) @db.Decimal(6, 2)
+  cofins    Decimal? @default(0) @db.Decimal(6, 2)
+  descricao String?  @db.VarChar(4000)
+  ncm       String
+  agregado  Decimal? @default(0) @db.Decimal(7, 2)
+  ncm_auto  String?  @db.VarChar(8)
+  id        Int      @id @default(autoincrement())
+}
+
+model dbclien {
+  codcli             String    @id @db.VarChar(10)
+  nome               String?   @db.VarChar(40)
+  nomefant           String?   @db.VarChar(30)
+  cpfcgc             String?   @db.VarChar(20)
+  tipo               String?   @db.VarChar(1)
+  codcc              String?   @db.VarChar(5)
+  codvend            String?   @db.VarChar(5)
+  datacad            DateTime? @db.Date
+  ender              String?   @db.VarChar(100)
+  bairro             String?   @db.VarChar(100)
+  cidade             String?   @db.VarChar(100)
+  uf                 String?   @db.VarChar(2)
+  cep                String?   @db.VarChar(9)
+  iest               String?   @db.VarChar(20)
+  isuframa           String?   @db.VarChar(20)
+  imun               String?   @db.VarChar(20)
+  status             String?   @db.VarChar(1)
+  obs                String?   @db.VarChar(100)
+  tipoemp            String?   @db.VarChar(3)
+  debito             Decimal   @db.Decimal(11, 2)
+  limite             Decimal   @db.Decimal(11, 2)
+  contato            String?   @db.VarChar(20)
+  socios             String?   @db.VarChar(50)
+  icms               String?   @db.VarChar(1)
+  endercobr          String?   @db.VarChar(100)
+  cidadecobr         String?   @db.VarChar(100)
+  bairrocobr         String?   @db.VarChar(100)
+  ufcobr             String?   @db.VarChar(2)
+  cepcobr            String?   @db.VarChar(9)
+  claspgto           String    @db.VarChar(1)
+  email              String?   @db.VarChar(100)
+  atraso             BigInt?
+  ipi                String?   @db.VarChar(1)
+  prvenda            String?   @db.VarChar(1)
+  codbairro          String?   @db.VarChar(5)
+  codbairrocobr      String?   @db.VarChar(5)
+  banco              String?   @db.VarChar(1)
+  tipocliente        String?   @db.VarChar(1)
+  codtmk             String?   @db.VarChar(5)
+  kickback           BigInt?
+  sit_tributaria     BigInt?
+  numero             String?   @db.VarChar(60)
+  referencia         String?   @db.VarChar(200)
+  codpais            BigInt?
+  numerocobr         String?   @db.VarChar(60)
+  codpaiscobr        BigInt?
+  referenciacobr     String?   @db.VarChar(200)
+  codmunicipio       String?   @db.VarChar(7)
+  codmunicipiocobr   String?   @db.VarChar(7)
+  complemento        String?   @db.VarChar(100)
+  complementocobr    String?   @db.VarChar(100)
+  acrescimo          Decimal?  @db.Decimal(5, 2)
+  desconto           Decimal?  @db.Decimal(5, 2)
+  habilitasuframa    String?   @db.VarChar(1)
+  emailnfe           String?   @db.VarChar(100)
+  faixafin           String?   @db.VarChar(2)
+  codunico           String?   @db.VarChar(7)
+  bloquear_preco     String?   @default("S") @db.VarChar(1)
+  local_entrega      String?   @db.VarChar(1)
+  codigo_filial      BigInt?
+  codprod            Int?
+  codgpf             Int?
+  codgpp             Int?
+  codgpe             Int?
+  codmarca           Int?
+  descr              String?   @db.VarChar(64)
+  REF                String?   @db.VarChar(50)
+  prcompra           Float?    @db.Real
+  prmedio            Float?    @db.Real
+  primp              Float?    @db.Real
+  pesoliq            Int?
+  qtembal            Int?
+  LOCAL              String?   @db.VarChar(50)
+  prfabr             Float?    @db.Real
+  concor             Float?    @db.Real
+  impfat             Int?
+  impfab             Int?
+  sit                String?   @db.VarChar(50)
+  unimed             String?   @db.VarChar(50)
+  qtest              Int?
+  clasfiscal         Int?
+  strib              Int?
+  codbar             Int?
+  trib               String?   @db.VarChar(50)
+  dolar              String?   @db.VarChar(50)
+  est                String?   @db.VarChar(50)
+  reforiginal        String?   @db.VarChar(50)
+  dtprcompra         String?   @db.VarChar(50)
+  dtprvenda          String?   @db.VarChar(50)
+  dtprfabr           String?   @db.VarChar(50)
+  dtprimp            String?   @db.VarChar(50)
+  dtprconcor         String?   @db.VarChar(50)
+  dtcompra           String?   @db.VarChar(50)
+  dtvenda            String?   @db.VarChar(50)
+  qtdcompra          Int?
+  qtdreservada       Int?
+  qtdinicial         Int?
+  percsubst          Int?
+  dtinventario       String?   @db.VarChar(50)
+  qtdpromocao        Int?
+  isentopiscofins    String?   @db.VarChar(50)
+  prcustoatual       Float?    @db.Real
+  local2             String?   @db.VarChar(50)
+  dtprcustoatual     String?   @db.VarChar(50)
+  curva              String?   @db.VarChar(50)
+  qtestmin           Int?
+  inf                String?   @db.VarChar(50)
+  nrodi              Int?
+  dtdi               String?   @db.VarChar(50)
+  qtest_filial       Int?
+  cumulativo         String?   @db.VarChar(50)
+  pratualdesp        Float?    @db.Real
+  pis                Float?    @db.Real
+  cofins             Float?    @db.Real
+  multiplo           Int?
+  aplic_extendida    String?   @db.VarChar(256)
+  isentoipi          String?   @db.VarChar(50)
+  coddesc            Int?
+  prodepe            String?   @db.VarChar(50)
+  hanan              String?   @db.VarChar(50)
+  prcomprasemst      Float?    @db.Real
+  prcompraf          Float?    @db.Real
+  prmediof           Float?    @db.Real
+  cmercd             Float?    @db.Real
+  cmercf             Float?    @db.Real
+  margem             Int?
+  tabelado           String?   @db.VarChar(50)
+  margempromo        Int?
+  estoque_contabil   Int?
+  curva_fornecedor   String?   @db.VarChar(50)
+  prfat_fornecedor   Int?
+  qtestmin_sugerido  Int?
+  curva_sugerido     String?   @db.VarChar(50)
+  preconf            Float?    @db.Real
+  precosnf           Float?    @db.Real
+  txdolarfabrica     Float?    @db.Real
+  txdolarvenda       Float?    @db.Real
+  txdolarcompra      Float?    @db.Real
+  txdolarcompramedio Int?
+  naotemst           String?   @db.VarChar(50)
+  compradireta       String?   @db.VarChar(50)
+  descontopiscofins  String?   @db.VarChar(50)
+  pro_id             Int?
+  cmerczf            Float?    @db.Real
+  excluido           Int?
+  qtestmax           Int?
+  qtestmax_sugerido  Int?
+  multiplocompra     Int?
+  codrelacionado     String?   @db.VarChar(50)
+  nfci               String?   @db.VarChar(50)
+  margem_min_venda   Int?
+  margem_med_venda   Int?
+  margem_ide_venda   Int?
+  cest               Int?
+  ii                 Int?
+  descr_importacao   String?   @db.VarChar(50)
+  sem_gtin           String?   @db.VarChar(50)
+  dbvenda            dbvenda[]
+}
+
+model dbcliente_limite {
+  codclilim     Int       @id(map: "pkcodclilim")
+  codcli        String?   @db.VarChar(10)
+  data          DateTime? @db.Date
+  ultimo_limite Int?
+  observacao    String?   @db.VarChar(255)
+  codusr        String?   @db.VarChar(4)
+}
+
+model dbcompradores {
+  codcomprador String @id @db.VarChar(3)
+  nome         String @db.VarChar(40)
+}
+
+model dbcredor {
+  cod_credor        String    @id @db.VarChar(5)
+  nome              String?   @db.VarChar(40)
+  nome_fant         String?   @db.VarChar(40)
+  cpf_cgc           String?   @db.VarChar(20)
+  tipo              String?   @db.VarChar(1)
+  data_cad          DateTime? @db.Date
+  endereco          String?   @db.VarChar(100)
+  bairro            String?   @db.VarChar(70)
+  cidade            String?   @db.VarChar(70)
+  uf                String?   @db.VarChar(2)
+  isuframa          String?   @db.VarChar(20)
+  iest              String?   @db.VarChar(20)
+  imun              String?   @db.VarChar(20)
+  cc                String?   @db.VarChar(10)
+  n_agencia         String?   @db.VarChar(6)
+  banco             String?   @db.VarChar(20)
+  cod_ident         String?   @db.VarChar(5)
+  contatos          String?   @db.VarChar(50)
+  tipoemp           String?   @db.VarChar(2)
+  cep               String?   @db.VarChar(9)
+  codcf             String?   @db.VarChar(5)
+  fabricante        String?   @default("N") @db.VarChar(1)
+  regime_tributacao String?   @default("2") @db.VarChar(1)
+  codbairro         String?   @db.VarChar(5)
+  codmunicipio      String?   @db.VarChar(7)
+  numero            String?   @default("0") @db.VarChar(60)
+  referencia        String?   @db.VarChar(200)
+  codpais           Decimal?  @db.Decimal
+  complemento       String?   @db.VarChar(100)
+  tipofornecedor    String?   @db.VarChar(2)
+  codunico          String?   @db.VarChar(7)
+  codccontabil      String?   @db.VarChar(8)
+}
+
+model dbcredor_ccontabil {
+  codcta String @id @db.VarChar(20)
+  descr  String @db.VarChar(100)
+}
+
+model dbctel {
+  tel        String @db.VarChar(14)
+  cod_credor String @db.VarChar(5)
+
+  @@id([tel, cod_credor])
+  @@index([cod_credor], map: "xif141dbctel")
+}
+
+model dbdados_banco {
+  id       Int     @id @default(autoincrement())
+  banco    String? @db.VarChar(3)
+  tipo     String? @db.VarChar(10)
+  nroconta String? @db.VarChar(10)
+  convenio String? @db.VarChar(10)
+  variacao String? @db.VarChar(3)
+  carteira String? @db.VarChar(3)
+  melo     String? @db.VarChar(3)
+  agencia  String? @db.VarChar(10)
+}
+
+model dbdados_vend {
+  codvend    String  @id @db.VarChar(5)
+  bairro     String? @db.VarChar(5)
+  cep        String? @db.VarChar(8)
+  cidade     String? @db.VarChar(20)
+  estado     String? @db.VarChar(2)
+  celular    String? @default("(  )    -    ") @db.VarChar(13)
+  logradouro String? @db.VarChar(40)
+  nome       String? @db.VarChar(40)
+  tipo       String? @db.VarChar(1)
+  cpf_cnpj   String? @db.VarChar(14)
+  dbvend     dbvend  @relation(fields: [codvend], references: [codvend])
+}
+
+model dbestoque {
+  codprod       String      @id @db.VarChar(6)
+  arm_id        Int
+  deposito      String      @db.VarChar(4)
+  quantidade    Int
+  tipo_deposito String      @db.VarChar(1)
+  cad_armazem   cad_armazem @relation(fields: [arm_id], references: [arm_id], onDelete: NoAction, onUpdate: NoAction)
+  dbprod        dbprod      @relation(fields: [codprod], references: [codprod])
+}
+
+model dbestoque_movimento {
+  codprod        String      @id @db.VarChar(6)
+  arm_id         Int
+  deposito       String      @db.VarChar(4)
+  quantidade     Int
+  tipo_movimento String      @db.VarChar(2)
+  data_registro  DateTime    @db.Date
+  hora_registro  String      @db.VarChar(8)
+  usuario        String      @db.VarChar(40)
+  documento      String      @db.VarChar(40)
+  tipo_documento String      @db.VarChar(2)
+  cad_armazem    cad_armazem @relation(fields: [arm_id], references: [arm_id], onDelete: NoAction, onUpdate: NoAction)
+  dbprod         dbprod      @relation(fields: [codprod], references: [codprod])
+}
+
+model dbfunc_estoque {
+  matricula String  @id @db.VarChar(6)
+  nome      String? @db.VarChar(50)
+  cargo     String? @db.VarChar(1)
+}
+
+model dbgpfunc {
+  codgpf                String   @id @db.VarChar(5)
+  descr                 String   @unique(map: "undbgpfuncndescr") @db.VarChar(20)
+  agregado_substituicao Decimal? @default(0) @db.Decimal(5, 2)
+  gpf_id                Decimal? @db.Decimal
+  AGREGADO_SUBSTUICAO   Decimal? @db.Decimal(5, 2)
+
+  @@index([descr], map: "xie1dbgpfunc")
+}
+
+model dbgpprod {
+  codgpp             String               @id @db.VarChar(5)
+  codvend            String?              @db.VarChar(5)
+  descbalcao         Decimal?             @default(0) @db.Decimal(5, 2)
+  dscrev30           Decimal?             @default(0) @db.Decimal(5, 2)
+  dscrev45           Decimal?             @default(0) @db.Decimal(5, 2)
+  dscrev60           Decimal?             @default(0) @db.Decimal(5, 2)
+  dscrv30            Decimal?             @default(0) @db.Decimal(5, 2)
+  dscrv45            Decimal?             @default(0) @db.Decimal(5, 2)
+  dscrv60            Decimal?             @default(0) @db.Decimal(5, 2)
+  dscbv30            Decimal?             @default(0) @db.Decimal(5, 2)
+  dscbv45            Decimal?             @default(0) @db.Decimal(5, 2)
+  dscbv60            Decimal?             @default(0) @db.Decimal(5, 2)
+  dscpv30            Decimal?             @default(0) @db.Decimal(5, 2)
+  dscpv45            Decimal?             @default(0) @db.Decimal(5, 2)
+  dscpv60            Decimal?             @default(0) @db.Decimal(5, 2)
+  descr              String               @unique(map: "undbgpproddescr") @db.VarChar(30)
+  comgpp             Decimal?             @default(0) @db.Decimal(3, 2)
+  comgpptmk          Decimal?             @default(0) @db.Decimal(3, 2)
+  comgppextmk        Decimal?             @default(0) @db.Decimal(3, 2)
+  codseg             String?              @db.VarChar(5)
+  diasreposicao      Int?                 @default(40)
+  codcomprador       String?              @default("000") @db.VarChar(3)
+  ramonegocio        String?              @default("S") @db.VarChar(1)
+  gpp_id             Decimal?             @db.Decimal
+  p_comercial        Int?                 @default(0)
+  v_marketing        Decimal?             @default(0) @db.Decimal(5, 2)
+  codgpc             String?              @default("0000") @db.VarChar(4)
+  margem_min_venda   Decimal?             @default(10.00) @db.Decimal(7, 2)
+  margem_med_venda   Decimal?             @default(10.00) @db.Decimal(7, 2)
+  margem_ide_venda   Decimal?             @default(10.00) @db.Decimal(7, 2)
+  bloquear_preco     String?              @default("S") @db.VarChar(1)
+  codgrupai          Decimal?             @db.Decimal
+  codgrupoprod       Decimal?             @db.Decimal
+  DSCBALCAO          Decimal?             @db.Decimal(5, 2)
+  dbanalise_gpxcurva dbanalise_gpxcurva[]
+  dbvendgpp          dbvendgpp[]
+
+  @@index([descr], map: "xie1dbgpprod")
+  @@index([codvend], map: "xif142dbgpprod")
+  @@index([codseg], map: "xpkdbgpprod2")
+}
+
+model dbgpprod_contabil {
+  codgpc String @id @db.VarChar(4)
+  descr  String @db.VarChar(100)
+}
+
+model dbitvenda {
+  ref               String?  @db.VarChar(20)
+  codprod           String   @db.VarChar(6)
+  codvenda          String   @db.VarChar(9)
+  qtd               BigInt
+  prunit            Decimal  @db.Decimal(9, 2)
+  demanda           String?  @db.VarChar(1)
+  descr             String?  @db.VarChar(60)
+  comissao          Decimal? @db.Decimal(5, 2)
+  origemcom         String?  @db.VarChar(1)
+  codoperador       String?  @db.VarChar(5)
+  codvend           String?  @db.VarChar(5)
+  prcompra          BigInt?
+  prmedio           BigInt?
+  comissaovend      BigInt?
+  comissao_operador BigInt?
+  desconto          BigInt?
+  codreq            String?  @db.VarChar(12)
+  codent            String?  @db.VarChar(9)
+  nrequis           String?  @db.VarChar(15)
+  nritem            String?  @db.VarChar(6)
+  arm_id            BigInt
+  dbvenda           dbvenda  @relation(fields: [codvenda], references: [codvenda], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([codprod, codvenda], map: "dbitvenda_pk")
+}
+
+model dbmarcas {
+  codmarca       String   @id @db.VarChar(5)
+  descr          String   @unique(map: "undbmarcasdescr") @db.VarChar(200)
+  mar_id         Decimal? @db.Decimal
+  bloquear_preco String?  @default("S") @db.VarChar(1)
+
+  @@index([descr], map: "xie1dbmarcas")
+}
+
+model dbmunicipio {
+  codmunicipio String @id @db.VarChar(7)
+  coduf        String @db.VarChar(2)
+  descricao    String @db.VarChar(70)
+  uf           String @db.VarChar(2)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model dbnfe_ent {
+  codnfe_ent     String           @id(map: "pk_nfe_ent_cod") @db.VarChar(9)
+  chave          String           @unique(map: "uq_nfe_ent_id") @db.VarChar(50)
+  versao         String?          @db.VarChar(5)
+  cuf            Decimal?         @default(0) @db.Decimal
+  cnf            Decimal?         @default(0) @db.Decimal
+  natop          String?          @db.VarChar(100)
+  indpag         Decimal?         @default(0) @db.Decimal
+  mod            String?          @db.VarChar(2)
+  serie          Decimal?         @default(0) @db.Decimal
+  nnf            Decimal?         @default(0) @db.Decimal
+  demi           DateTime?        @db.Date
+  tpnf           Decimal?         @default(0) @db.Decimal
+  cmunfg         Decimal?         @default(0) @db.Decimal
+  tpimp          Decimal?         @default(0) @db.Decimal
+  tpemis         Decimal?         @default(0) @db.Decimal
+  cdv            Decimal?         @default(0) @db.Decimal
+  finnfe         Decimal?         @default(0) @db.Decimal
+  procemi        Decimal?         @default(0) @db.Decimal
+  verproc        String?          @db.VarChar(20)
+  modfrete       Decimal?         @default(0) @db.Decimal
+  pesol          Decimal?         @default(0) @db.Decimal
+  pesob          Decimal?         @default(0) @db.Decimal
+  vbc            Decimal?         @default(0) @db.Decimal
+  vicms          Decimal?         @default(0) @db.Decimal
+  vbcst          Decimal?         @default(0) @db.Decimal
+  vst            Decimal?         @default(0) @db.Decimal
+  vprod          Decimal?         @default(0) @db.Decimal
+  vfrete         Decimal?         @default(0) @db.Decimal
+  vseg           Decimal?         @default(0) @db.Decimal
+  vdesc          Decimal?         @default(0) @db.Decimal
+  vii            Decimal?         @default(0) @db.Decimal
+  vipi           Decimal?         @default(0) @db.Decimal
+  vpis           Decimal?         @default(0) @db.Decimal
+  vcofins        Decimal?         @default(0) @db.Decimal
+  voutro         Decimal?         @default(0) @db.Decimal
+  vnf            Decimal?         @default(0) @db.Decimal
+  infcpl         String?          @db.VarChar(4000)
+  nprot          String?          @db.VarChar(20)
+  exec           String           @default("N") @db.VarChar(1)
+  nfat           String?          @db.VarChar(60)
+  vorigfat       Decimal?         @default(0) @db.Decimal
+  vliqfat        Decimal?         @default(0) @db.Decimal
+  vdescfat       Decimal?         @default(0) @db.Decimal
+  codent         String?          @unique(map: "uq_nfe_ent_codent") @db.VarChar(10)
+  codusr         String?          @db.VarChar(20)
+  dtexec         DateTime?        @db.Date
+  qvol           Decimal?         @default(0) @db.Decimal
+  hemi           String?          @db.VarChar(10)
+  iddest         String?          @db.VarChar(1)
+  indfinal       String?          @db.VarChar(1)
+  indpres        String?          @db.VarChar(1)
+  vtottrib       Decimal?         @default(0) @db.Decimal
+  vserv          Decimal?         @default(0) @db.Decimal
+  vbciss         Decimal?         @default(0) @db.Decimal
+  viss           Decimal?         @default(0) @db.Decimal
+  vpis_ser       Decimal?         @default(0) @db.Decimal
+  vcofins_ser    Decimal?         @default(0) @db.Decimal
+  dcompet        DateTime?        @db.Date
+  vdeducao       Decimal?         @default(0) @db.Decimal
+  voutroiss      Decimal?         @default(0) @db.Decimal
+  vdescincond    Decimal?         @default(0) @db.Decimal
+  vdesccond      Decimal?         @default(0) @db.Decimal
+  vissret        Decimal?         @default(0) @db.Decimal
+  cregtrib       String?          @db.VarChar(1)
+  vretpis        Decimal?         @default(0) @db.Decimal
+  vretcofins     Decimal?         @default(0) @db.Decimal
+  vretcsll       Decimal?         @default(0) @db.Decimal
+  vbcirrf        Decimal?         @default(0) @db.Decimal
+  virrf          Decimal?         @default(0) @db.Decimal
+  vbcretprev     Decimal?         @default(0) @db.Decimal
+  vretprev       Decimal?         @default(0) @db.Decimal
+  ufsaidapais    String?          @db.VarChar(2)
+  xlocexporta    String?          @db.VarChar(60)
+  xlocdespacho   String?          @db.VarChar(60)
+  xnemp          String?          @db.VarChar(30)
+  xpedemp        String?          @db.VarChar(60)
+  xcontemp       String?          @db.VarChar(60)
+  pdevol         Decimal?         @default(0) @db.Decimal
+  vipidevol      Decimal?         @default(0) @db.Decimal
+  dtimport       DateTime?        @db.Date
+  ufembarq       String?          @db.VarChar(2)
+  xlocembarq     String?          @db.VarChar(60)
+  nfref          String?          @db.VarChar(44)
+  dev_id         Decimal?         @db.Decimal
+  dbnfe_ent_dest dbnfe_ent_dest[] @ignore
+  dbnfe_ent_emit dbnfe_ent_emit[] @ignore
+  dbnfe_ent_tran dbnfe_ent_tran[] @ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model dbnfe_ent_dest {
+  codnfe_ent    String    @db.VarChar(9)
+  cpf_cnpj      String?   @db.VarChar(14)
+  xnome         String?   @db.VarChar(60)
+  xlgr          String?   @db.VarChar(60)
+  nro           String?   @db.VarChar(60)
+  xcpl          String?   @db.VarChar(60)
+  xbairro       String?   @db.VarChar(60)
+  cmun          Decimal?  @default(0) @db.Decimal
+  xmun          String?   @db.VarChar(60)
+  uf            String?   @db.VarChar(2)
+  cep           String?   @db.VarChar(10)
+  cpais         Decimal?  @default(0) @db.Decimal
+  xpais         String?   @db.VarChar(60)
+  fone          String?   @db.VarChar(20)
+  ie            String?   @db.VarChar(20)
+  isuf          String?   @db.VarChar(10)
+  email         String?   @db.VarChar(60)
+  idestrangeiro String?   @db.VarChar(20)
+  dbnfe_ent     dbnfe_ent @relation(fields: [codnfe_ent], references: [codnfe_ent], onDelete: NoAction, onUpdate: NoAction, map: "fk_dest_nfe_ent_cod")
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model dbnfe_ent_emit {
+  codnfe_ent String    @db.VarChar(9)
+  cpf_cnpj   String?   @db.VarChar(14)
+  xnome      String?   @db.VarChar(60)
+  xlgr       String?   @db.VarChar(60)
+  nro        String?   @db.VarChar(50)
+  xcpl       String?   @db.VarChar(60)
+  xbairro    String?   @db.VarChar(60)
+  cmun       Decimal?  @default(0) @db.Decimal
+  xmun       String?   @db.VarChar(60)
+  uf         String?   @db.VarChar(2)
+  cep        String?   @db.VarChar(10)
+  cpais      Decimal?  @default(0) @db.Decimal
+  xpais      String?   @db.VarChar(60)
+  fone       String?   @db.VarChar(20)
+  ie         String?   @db.VarChar(20)
+  im         String?   @db.VarChar(20)
+  cnae       String?   @db.VarChar(10)
+  dbnfe_ent  dbnfe_ent @relation(fields: [codnfe_ent], references: [codnfe_ent], onDelete: NoAction, onUpdate: NoAction, map: "fk_emit_nfe_ent_cod")
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model dbnfe_ent_tran {
+  codnfe_ent   String    @db.VarChar(9)
+  cpf_cnpj     String?   @db.VarChar(14)
+  xnome        String?   @db.VarChar(60)
+  ie           String?   @db.VarChar(20)
+  xender       String?   @db.VarChar(60)
+  xmun         String?   @db.VarChar(60)
+  uf           String?   @db.VarChar(2)
+  rntc         String?   @db.VarChar(20)
+  placa        String?   @db.VarChar(10)
+  uf_placa     String?   @db.VarChar(2)
+  rntc_reb     String?   @db.VarChar(20)
+  placa_reb    String?   @db.VarChar(10)
+  uf_placa_reb String?   @db.VarChar(2)
+  vagao_reb    String?   @db.VarChar(20)
+  balsa_reb    String?   @db.VarChar(20)
+  especie      String?   @db.VarChar(60)
+  marca        String?   @db.VarChar(60)
+  numeracao    String?   @db.VarChar(60)
+  lacre        String?   @db.VarChar(60)
+  vserv        Decimal?  @default(0) @db.Decimal
+  vbcret       Decimal?  @default(0) @db.Decimal
+  picmsret     Decimal?  @default(0) @db.Decimal
+  vicmsret     Decimal?  @default(0) @db.Decimal
+  cfop         Decimal?  @default(0) @db.Decimal
+  cmunfg       String?   @db.VarChar(7)
+  dbnfe_ent    dbnfe_ent @relation(fields: [codnfe_ent], references: [codnfe_ent], onDelete: NoAction, onUpdate: NoAction, map: "fk_tran_nfe_ent_cod")
+
+  @@ignore
+}
+
+model dbpais {
+  codpais   Int    @id @default(autoincrement())
+  descricao String @db.VarChar(50)
+}
+
+model dbprod {
+  codprod              String                 @id @db.VarChar(6)
+  codgpf               String?                @db.VarChar(5)
+  codgpp               String?                @db.VarChar(5)
+  codgpe               String?                @db.VarChar(5)
+  codmarca             String?                @db.VarChar(5)
+  descr                String?                @db.VarChar(200)
+  ref                  String?                @db.VarChar(20)
+  prcompra             Decimal                @default(0) @db.Decimal(13, 2)
+  prvenda              Decimal?               @default(0) @db.Decimal(13, 2)
+  prmedio              Decimal                @default(0) @db.Decimal(13, 2)
+  primp                Decimal?               @default(0) @db.Decimal(13, 2)
+  pesoliq              Decimal?               @default(0) @db.Decimal(7, 2)
+  qtembal              Int?                   @default(0)
+  local                String?                @db.VarChar(15)
+  prfabr               Decimal?               @default(0) @db.Decimal(13, 2)
+  concor               Decimal?               @default(0) @db.Decimal(13, 2)
+  impfat               Decimal?               @default(0) @db.Decimal(13, 2)
+  impfab               Decimal?               @db.Decimal(13, 2)
+  obs                  String?                @db.VarChar(100)
+  sit                  String?                @default("N") @db.VarChar(1)
+  unimed               String?                @db.VarChar(2)
+  qtest                Int                    @default(0)
+  clasfiscal           String?                @db.VarChar(10)
+  strib                String                 @default("000") @db.VarChar(3)
+  codbar               String?                @db.VarChar(15)
+  trib                 String?                @default("N") @db.VarChar(1)
+  dolar                String?                @default("N") @db.VarChar(1)
+  est                  String?                @default("N") @db.VarChar(1)
+  ipi                  Decimal?               @default(0) @db.Decimal(5, 2)
+  reforiginal          String?                @db.VarChar(20)
+  dtprcompra           DateTime?              @db.Date
+  dtprvenda            DateTime?              @db.Date
+  dtprfabr             DateTime?              @db.Date
+  dtprimp              DateTime?              @db.Date
+  dtprconcor           DateTime?              @db.Date
+  dtcompra             DateTime?              @db.Date
+  dtvenda              DateTime?              @db.Date
+  qtdcompra            Int?
+  qtdreservada         Int                    @default(0)
+  qtdinicial           Int?                   @default(0)
+  percsubst            Decimal?               @default(0) @db.Decimal(7, 2)
+  dtinventario         DateTime?              @db.Date
+  qtdpromocao          Int?
+  isentopiscofins      String?                @db.VarChar(1)
+  prcustoatual         Decimal?               @default(0) @db.Decimal(13, 2)
+  local2               String?                @db.VarChar(15)
+  dtprcustoatual       DateTime?              @db.Date
+  curva                String?                @db.VarChar(1)
+  qtestmin             Int?                   @default(0)
+  inf                  String?                @db.VarChar(1)
+  nrodi                String?                @db.VarChar(15)
+  dtdi                 DateTime?              @db.Date
+  qtest_filial         Int                    @default(0)
+  cumulativo           String?                @default("N") @db.VarChar(1)
+  pratualdesp          Decimal?               @default(0) @db.Decimal(13, 2)
+  pis                  Decimal?               @db.Decimal(5, 2)
+  cofins               Decimal?               @db.Decimal(5, 2)
+  multiplo             Int                    @default(1)
+  aplic_extendida      String?                @db.VarChar(255)
+  isentoipi            String?                @db.VarChar(1)
+  coddesc              Int?
+  prodepe              String?                @db.VarChar(1)
+  hanan                String?                @db.VarChar(1)
+  prcomprasemst        Decimal?               @default(0) @db.Decimal(13, 2)
+  prcompraf            Decimal?               @default(0) @db.Decimal(13, 2)
+  prmediof             Decimal?               @default(0) @db.Decimal(13, 2)
+  cmercd               Decimal                @default(0) @db.Decimal(13, 2)
+  cmercf               Decimal                @default(0) @db.Decimal(13, 2)
+  margem               Decimal                @default(0) @db.Decimal(13, 2)
+  tabelado             String?                @default("N") @db.VarChar(1)
+  margempromo          Decimal                @default(0) @db.Decimal(13, 2)
+  estoque_contabil     String?                @default("1") @db.VarChar(1)
+  curva_fornecedor     String?                @db.VarChar(1)
+  prfat_fornecedor     Decimal?               @default(0) @db.Decimal(13, 2)
+  qtestmin_sugerido    Int?
+  curva_sugerido       String?                @db.VarChar(1)
+  preconf              Decimal?               @default(0) @db.Decimal(13, 2)
+  precosnf             Decimal?               @default(0) @db.Decimal(13, 2)
+  txdolarfabrica       Decimal?               @default(0) @db.Decimal(13, 2)
+  txdolarvenda         Decimal?               @default(0) @db.Decimal(13, 2)
+  txdolarcompra        Decimal?               @default(0) @db.Decimal(17, 6)
+  txdolarcompramedio   Decimal?               @default(0) @db.Decimal(17, 6)
+  naotemst             String?                @db.VarChar(1)
+  compradireta         String?                @db.VarChar(1)
+  descontopiscofins    String?                @db.VarChar(1)
+  pro_id               Int?
+  cmerczf              Decimal                @default(0) @db.Decimal(13, 2)
+  excluido             Int                    @default(0)
+  qtestmax             Int                    @default(0)
+  qtestmax_sugerido    Int                    @default(0)
+  multiplocompra       Int                    @default(1)
+  codunico             Int?
+  codrelacionado       String?                @db.VarChar(5)
+  tipo                 String                 @default("ME") @db.VarChar(2)
+  nfci                 String?                @db.VarChar(36)
+  margem_min_venda     Decimal?               @default(0) @db.Decimal(9, 2)
+  margem_med_venda     Decimal?               @default(0) @db.Decimal(9, 2)
+  margem_ide_venda     Decimal?               @default(0) @db.Decimal(13, 6)
+  cest                 String?                @db.VarChar(7)
+  ii                   Decimal?               @db.Decimal(9, 2)
+  descr_importacao     String?                @db.VarChar(200)
+  sem_gtin             Int?
+  consumo_interno      Boolean                @default(false)
+  arm_it_transferencia arm_it_transferencia[]
+  dbestoque            dbestoque?
+  dbestoque_movimento  dbestoque_movimento?
+}
+
+model dbreceb {
+  cod_receb       String    @id(map: "pkdbreceb") @db.VarChar(9)
+  codcli          String    @db.VarChar(10)
+  cod_venda       String?   @db.VarChar(9)
+  cod_conta       String?   @db.VarChar(4)
+  cod_fat         String?   @db.VarChar(9)
+  nro_doc         String?   @db.VarChar(15)
+  valor_pgto      Decimal?  @db.Decimal(11, 2)
+  valor_rec       Decimal?  @db.Decimal(11, 2)
+  dt_venc         DateTime? @db.Date
+  dt_pgto         DateTime? @db.Date
+  dt_emissao      DateTime? @db.Date
+  tipo            String?   @db.VarChar(1)
+  rec             String?   @db.VarChar(1)
+  cancel          String?   @db.VarChar(1)
+  nro_docbanco    String?   @db.VarChar(5)
+  bradesco        String?   @db.VarChar(1)
+  forma_fat       String?   @db.VarChar(1)
+  venc_ant        DateTime? @db.Date
+  nrocx           String?   @db.VarChar(1)
+  banco           String?   @default("0") @db.VarChar(1)
+  nro_docbrasil   String?   @db.VarChar(5)
+  nro_banco       String?   @db.VarChar(20)
+  codgp           Int?
+  dtvenc_previsao DateTime? @db.Date
+  codemp          Int?
+  rec_cof_id      Int?      @default(154)
+  import          String?   @default("N") @db.VarChar(1)
+}
+
+model dbsegmento {
+  codseg           String   @id @db.VarChar(5)
+  descricao        String   @db.VarChar(50)
+  margem_min_venda Decimal? @default(0) @db.Decimal(7, 2)
+  margem_med_venda Decimal? @default(0) @db.Decimal(7, 2)
+  margem_ide_venda Decimal? @default(0) @db.Decimal(7, 2)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model dbtipopagto {
+  codtipo   Decimal @db.Decimal
+  descricao String? @db.VarChar(50)
+
+  @@ignore
+}
+
+model dbtipopagtocliente {
+  codtipo Int    @id
+  codcli  String @db.VarChar(10)
+}
+
+model dbtransp {
+  codtransp    String    @id @db.VarChar(5)
+  nome         String    @db.VarChar(50)
+  nomefant     String?   @db.VarChar(50)
+  cpfcgc       String?   @db.VarChar(20)
+  tipo         String?   @db.VarChar(1)
+  data_cad     DateTime? @db.Date
+  ender        String?   @db.VarChar(100)
+  bairro       String?   @db.VarChar(100)
+  cidade       String?   @db.VarChar(100)
+  uf           String?   @db.VarChar(2)
+  iest         String?   @db.VarChar(20)
+  isuframa     String?   @db.VarChar(20)
+  imun         String?   @db.VarChar(20)
+  tipoemp      String?   @db.VarChar(2)
+  contatos     String?   @db.VarChar(50)
+  cc           String?   @db.VarChar(10)
+  n_agencia    String?   @db.VarChar(6)
+  banco        String?   @db.VarChar(20)
+  cod_ident    String?   @db.VarChar(5)
+  cep          String?   @db.VarChar(9)
+  codbairro    String?   @db.VarChar(5)
+  codmunicipio String?   @db.VarChar(7)
+  numero       String?   @db.VarChar(60)
+  referencia   String?   @db.VarChar(200)
+  codpais      Int?
+  complemento  String?   @db.VarChar(100)
+  codunico     String?   @db.VarChar(7)
+
+  @@index([nome], map: "xie1dbtransp")
+  @@index([nomefant], map: "xie2dbtransp")
+}
+
+model dbvend {
+  codvend          String            @id @db.VarChar(5)
+  nome             String?           @db.VarChar(30)
+  valobj           Decimal           @default(0) @db.Decimal(8, 2)
+  comnormal        Decimal?          @db.Decimal(6, 2)
+  comtele          Decimal?          @db.Decimal(6, 2)
+  debito           Decimal?          @db.Decimal(9, 2)
+  credito          Decimal?          @db.Decimal(9, 2)
+  limite           Decimal?          @db.Decimal(9, 2)
+  status           String?           @db.VarChar(1)
+  codcv            String?           @db.VarChar(3)
+  comobj           Decimal?          @db.Decimal(6, 2)
+  valobjf          Decimal?          @db.Decimal(8, 2)
+  valobjm          Decimal?          @db.Decimal(8, 2)
+  valobjsf         Decimal?          @db.Decimal(8, 2)
+  ra_mat           String?           @db.VarChar(6)
+  dbdados_vend     dbdados_vend?
+  dbclassevendedor dbclassevendedor? @relation(fields: [codcv], references: [codcv])
+  dbvend_pst       dbvend_pst?
+  dbvendgpp        dbvendgpp[]
+
+  @@index([codcv], map: "codcv")
+}
+
+model dbvend_pst {
+  id      Int    @id @default(autoincrement())
+  codvend String @unique @db.VarChar(5)
+  codpst  String @db.VarChar(4)
+  local   String @db.VarChar(3)
+  dbvend  dbvend @relation(fields: [codvend], references: [codvend])
+
+  @@index([codvend], map: "idx_dbvend_pst_codvend")
+}
+
+model dbvenda {
+  operacao            BigInt?
+  codvenda            String           @id @db.VarChar(9)
+  codusr              String?          @db.VarChar(4)
+  nrovenda            String?          @db.VarChar(9)
+  codcli              String           @db.VarChar(10)
+  data                DateTime?        @db.Date
+  total               Decimal?         @db.Decimal(13, 2)
+  nronf               String?          @db.VarChar(10)
+  pedido              String?          @db.VarChar(30)
+  status              String?          @db.VarChar(1)
+  transp              String?          @db.VarChar(50)
+  prazo               String?          @db.VarChar(40)
+  obs                 String?          @db.VarChar(100)
+  tipo_desc           String?          @db.VarChar(2)
+  tipo                String           @db.VarChar(1)
+  tele                String?          @db.VarChar(1)
+  cancel              String?          @db.VarChar(1)
+  statusest           String?          @db.VarChar(1)
+  impresso            String?          @db.VarChar(1)
+  vlrfrete            Decimal?         @db.Decimal(11, 2)
+  codtptransp         String?          @db.VarChar(3)
+  bloqueada           String?          @db.VarChar(1)
+  estoque_virtual     String?          @db.VarChar(1)
+  numeroserie         String?          @db.VarChar(100)
+  numerocupom         String?          @db.VarChar(20)
+  obsfat              String?          @db.VarChar(100)
+  LOCALENTREGACLIENTE String?          @db.VarChar(5)
+  codvend             String?          @db.VarChar(5)
+  nome                String?          @db.VarChar(30)
+  valobj              Decimal?         @db.Decimal(8, 2)
+  comnormal           Decimal?         @db.Decimal(6, 2)
+  comtele             Decimal?         @db.Decimal(6, 2)
+  debito              Decimal?         @db.Decimal(9, 2)
+  credito             Decimal?         @db.Decimal(9, 2)
+  limite              Decimal?         @db.Decimal(9, 2)
+  codcv               String?          @db.VarChar(3)
+  comobj              Decimal?         @db.Decimal(6, 2)
+  valobjf             Decimal?         @db.Decimal(8, 2)
+  valobjm             Decimal?         @db.Decimal(8, 2)
+  valobjsf            Decimal?         @db.Decimal(8, 2)
+  ra_mat              String?          @db.VarChar(6)
+  dbitvenda           dbitvenda[]
+  dbclien             dbclien          @relation(fields: [codcli], references: [codcli], onDelete: NoAction, onUpdate: NoAction)
+  tb_pedido_user      tb_pedido_user[]
+}
+
+model dbvenda_orcamento {
+  operacao        BigInt?
+  codvenda        String    @id @db.VarChar(9)
+  codusr          String?   @db.VarChar(4)
+  nrovenda        String?   @db.VarChar(9)
+  codcli          String    @db.VarChar(10)
+  data            DateTime? @db.Date
+  total           Decimal?  @db.Decimal(13, 2)
+  nronf           String?   @db.VarChar(10)
+  pedido          String?   @db.VarChar(30)
+  status          String?   @db.VarChar(1)
+  transp          String?   @db.VarChar(50)
+  prazo           String?   @db.VarChar(40)
+  obs             String?   @db.VarChar(100)
+  tipo_desc       String?   @db.VarChar(2)
+  tipo            String    @db.VarChar(1)
+  tele            String?   @db.VarChar(1)
+  cancel          String?   @db.VarChar(1)
+  statusest       String?   @db.VarChar(1)
+  impresso        String?   @db.VarChar(1)
+  vlrfrete        Decimal?  @db.Decimal(11, 2)
+  codtptransp     String?   @db.VarChar(3)
+  bloqueada       String?   @db.VarChar(1)
+  estoque_virtual String?   @db.VarChar(1)
+  numeroserie     String?   @db.VarChar(100)
+  numerocupom     String?   @db.VarChar(20)
+  obsfat          String?   @db.VarChar(100)
+}
+
+model dbvendacomissao {
+  id               BigInt   @id @default(autoincrement())
+  codprod          String?  @db.VarChar(6)
+  codvenda         String?  @db.VarChar(9)
+  codvend          String?  @db.VarChar(5)
+  comissaovend     Decimal? @db.Decimal(9, 2)
+  reducaovend      Decimal? @db.Decimal(9, 2)
+  codoperador      String?  @db.VarChar(5)
+  comissaooperador Decimal? @db.Decimal(9, 2)
+  reducaooperador  Decimal? @db.Decimal(9, 2)
+  tiporeducao      String?  @db.VarChar(20)
+  nrequis          String?  @db.VarChar(15)
+  nritem           String?  @db.VarChar(6)
+}
+
+model dbvendgpp {
+  codgpp      String   @db.VarChar
+  codvend     String   @db.VarChar
+  exclusivo   String   @db.VarChar(1)
+  comdireta   Decimal  @db.Decimal(5, 2)
+  comindireta Decimal  @db.Decimal(5, 2)
+  dbgpprod    dbgpprod @relation(fields: [codgpp], references: [codgpp])
+  dbvend      dbvend   @relation(fields: [codvend], references: [codvend])
+
+  @@id([codgpp, codvend])
+}
+
+model dbvvend {
+  operador String @db.VarChar(1)
+  codvenda String @db.VarChar(9)
+  codvend  String @db.VarChar(5)
+
+  @@id([operador, codvenda, codvend])
+}
+
+model dbzona {
+  codzona  String     @id @db.VarChar(3)
+  descr    String     @db.VarChar(20)
+  dbbairro dbbairro[]
+}
+
+model tb_filial {
+  codigo_filial BigInt @id @default(autoincrement())
+  nome_filial   String @db.VarChar
+}
+
+model tb_grupo_Permissao {
+  id              Int             @id @default(autoincrement())
+  editar          Boolean
+  cadastrar       Boolean
+  remover         Boolean
+  exportar        Boolean
+  grupoId         String
+  tela            Int
+  tb_login_perfil tb_login_perfil @relation(fields: [grupoId], references: [login_perfil_name])
+  tb_telas        tb_telas        @relation(fields: [tela], references: [CODIGO_TELA])
+}
+
+model tb_login_access_perfil {
+  id_functions      BigInt
+  login_perfil_name String @db.VarChar(500)
+
+  @@id([id_functions, login_perfil_name], map: "tb_login_access_group_pkey")
+}
+
+model tb_login_access_user {
+  id_functions      BigInt
+  login_user_login  String           @db.VarChar(500)
+  login_perfil_name String?          @db.VarChar(255)
+  tb_login_perfil   tb_login_perfil? @relation(fields: [login_perfil_name], references: [login_perfil_name], onDelete: Cascade, map: "fk_login_access_user_perfil")
+
+  @@id([id_functions, login_user_login])
+  @@index([login_perfil_name], map: "idx_login_access_user_perfil")
+}
+
+model tb_login_filiais {
+  login_user_login String @db.VarChar(40)
+  nome_filial      String @db.VarChar(500)
+  codigo_filial    Int
+
+  @@id([login_user_login, codigo_filial])
+}
+
+model tb_login_functions {
+  id_functions  Int     @id @default(autoincrement())
+  descricao     String  @db.VarChar(100)
+  codigo_filial Int     @default(autoincrement())
+  usadoEm       String? @db.VarChar(255)
+  sigla         String? @db.VarChar(50)
+}
+
+model tb_login_perfil {
+  login_perfil_name    String                 @id(map: "tb_login_group_pkey") @db.VarChar
+  tb_grupo_Permissao   tb_grupo_Permissao[]
+  tb_login_access_user tb_login_access_user[]
+  tb_user_perfil       tb_user_perfil[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tb_login_user {
+  login_perfil_name   String?          @db.VarChar(60)
+  login_user_login    String           @id @db.VarChar(40)
+  login_user_password String           @db.VarChar(100)
+  login_user_name     String           @db.VarChar(60)
+  login_user_obs      String?
+  tb_pedido_user      tb_pedido_user[]
+  tb_user_perfil      tb_user_perfil[]
+}
+
+model tb_pedido_user {
+  id               Int           @id @default(autoincrement())
+  id_pedido        String        @db.VarChar(9)
+  login_user_login String        @db.VarChar(40)
+  created_at       DateTime?     @default(now()) @db.Timestamp(6)
+  dbvenda          dbvenda       @relation(fields: [id_pedido], references: [codvenda])
+  tb_login_user    tb_login_user @relation(fields: [login_user_login], references: [login_user_login])
+}
+
+model tb_pedidos {
+  id         Int      @id @default(autoincrement())
+  codcli     String   @db.VarChar(50)
+  codprod    String   @db.VarChar(50)
+  qtd        Int
+  prunit     Decimal  @db.Decimal(13, 2)
+  prtotal    Decimal  @db.Decimal(13, 2)
+  status     String   @db.VarChar(20)
+  created_at DateTime @db.Timestamp(6)
+}
+
+model tb_telas {
+  CODIGO_TELA        Int                  @id @default(autoincrement())
+  NOME_TELA          String               @db.VarChar
+  PATH_TELA          String               @db.VarChar
+  tb_grupo_Permissao tb_grupo_Permissao[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tb_user_perfil {
+  user_login_id   String          @db.VarChar(40)
+  perfil_name     String          @db.VarChar
+  codigo_filial   Int
+  nome_filial     String?         @db.VarChar(500)
+  tb_login_perfil tb_login_perfil @relation(fields: [perfil_name], references: [login_perfil_name], onDelete: Cascade, map: "fk_user_perfil_perfil")
+  tb_login_user   tb_login_user   @relation(fields: [user_login_id], references: [login_user_login], onDelete: Cascade, map: "fk_user_perfil_user")
+
+  @@id([user_login_id, perfil_name, codigo_filial], map: "pk_user_perfil")
+}
+
+model ven_deposito_venda {
+  ven_codusuario    String    @db.VarChar(4)
+  ven_codvenda      String    @db.VarChar(9)
+  ven_data_venda    DateTime? @db.Date
+  ven_codcli        String    @db.VarChar(5)
+  ven_valor_venda   Decimal?  @db.Decimal(10, 2)
+  ven_data_confirma DateTime? @db.Date
+  ven_status        String?   @db.VarChar(1)
+  ven_banco         String?   @db.VarChar(1)
+  ven_conta         String?   @db.VarChar(15)
+
+  @@id([ven_codvenda, ven_codusuario, ven_codcli])
+}
+
+model cmp_produto {
+  CODPROD      String?  @db.VarChar(6)
+  CODUNICO     Decimal? @db.Decimal
+  ORIGEM       String?  @db.VarChar(6)
+  MARCA        String?  @db.VarChar(50)
+  GRUPOPRODUTO String?  @db.VarChar(50)
+  REF          String?  @db.VarChar(50)
+  APLICACAO    String?  @db.VarChar(50)
+  ESTOQUE      Decimal  @db.Decimal
+  CUSTO        Decimal  @db.Decimal
+  CODMARCA     String?  @db.VarChar(5)
+  CODGPP       String?  @db.VarChar(5)
+  INF          String?  @db.VarChar(1)
+  MULTIPLO     Decimal? @db.Decimal
+  ESTOQUE_MIN  Decimal? @db.Decimal
+  ESTOQUE_MAX  Decimal? @db.Decimal
+  MAR_ID       Decimal? @db.Decimal
+  GPP_ID       Decimal? @db.Decimal
+  CURVA        String?  @db.VarChar(1)
+  id           Int      @id @default(autoincrement())
+}
+
+model dbformacaoprvenda {
+  CODPROD       String?  @db.VarChar(6)
+  TIPOPRECO     Decimal  @db.Decimal
+  MARGEMLIQUIDA Decimal  @db.Decimal
+  ICMSDEVOL     Decimal  @db.Decimal
+  ICMS          Decimal  @db.Decimal
+  IPI           Decimal  @db.Decimal
+  PIS           Decimal  @db.Decimal
+  COFINS        Decimal  @db.Decimal
+  DCI           Decimal  @db.Decimal
+  COMISSAO      Decimal  @db.Decimal
+  FATORDESPESAS Decimal  @db.Decimal
+  PRECOVENDA    Decimal  @db.Decimal
+  TAXACARTAO    Decimal? @db.Decimal
+  id            Int      @id @default(autoincrement())
+}
