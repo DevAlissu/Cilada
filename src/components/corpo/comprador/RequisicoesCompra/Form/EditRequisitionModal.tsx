@@ -1,78 +1,102 @@
+// src/components/corpo/comprador/RequisicoesCompra/Form/EditRequisitionModal.tsx
+
 import React, { useEffect, useState, useCallback } from 'react';
 import ModalForm from '@/components/common/modalform';
 import FormInput from '@/components/common/FormInput';
 import SelectInput from '@/components/common/SelectInput';
 import SearchSelectInput from '@/components/common/SearchSelectInput';
-
-import { useRequisitionForm } from '../hooks/useRequisitionForm';
 import { useTiposDeCompra } from '../hooks/useTiposDeCompra';
 import { useFiliais } from '../hooks/useFiliais';
 import { useCompradores } from '../hooks/useCompradores';
 import { useFornecedores } from '../hooks/useFornecedores';
+import { updateRequisition } from '@/data/requisicoesCompra/requisicoesCompra';
+import type { RequisitionDTO } from '@/data/requisicoesCompra/types/requisition';
 
-interface Props {
+interface EditRequisitionModalProps {
   isOpen: boolean;
+  requisition: RequisitionDTO | null;
   onClose: () => void;
   onSuccess?: () => void;
 }
 
-export default function RequisitionModal({
+export default function EditRequisitionModal({
   isOpen,
+  requisition,
   onClose,
   onSuccess,
-}: Props) {
-  const { form, open, onChange, submit, reset, saving, error } =
-    useRequisitionForm(onSuccess ?? (() => {}));
+}: EditRequisitionModalProps) {
   const { tipos } = useTiposDeCompra();
   const { filiais } = useFiliais();
   const { compradores } = useCompradores();
   const { fornecedores } = useFornecedores();
 
-  // Inputs livres do usuário (não persistidos)
+  // Estado do form (local pro modal)
+  const [form, setForm] = useState<Partial<RequisitionDTO>>({});
+  // Inputs ao vento, só UI
   const [condicoesPgto, setCondicoesPgto] = useState('');
   const [observacao, setObservacao] = useState('');
   const [resetKey, setResetKey] = useState(0);
 
+  // Preenche campos ao abrir
   useEffect(() => {
-    if (isOpen) {
-      open();
+    if (isOpen && requisition) {
+      setForm(requisition);
       setCondicoesPgto('');
       setObservacao('');
       setResetKey((k) => k + 1);
     }
-    // eslint-disable-next-line
-  }, [isOpen]);
+  }, [isOpen, requisition]);
 
+  // Atualiza form nos selects/inputs
+  const handleChange = <K extends keyof RequisitionDTO>(
+    field: K,
+    value: string | number,
+  ) => {
+    setForm((f) => ({ ...f, [field]: value }));
+  };
+
+  // Limpa pro estado original (não limpa tudo!)
   const handleClear = useCallback(() => {
-    reset();
-    setCondicoesPgto('');
-    setObservacao('');
-    setResetKey((k) => k + 1);
-  }, [reset]);
+    if (requisition) {
+      setForm(requisition);
+      setCondicoesPgto('');
+      setObservacao('');
+      setResetKey((k) => k + 1);
+    }
+  }, [requisition]);
 
-  // Helper para filtrar duplicatas por código
+  // Envia update (NÃO inclui condicoesPgto nem observacao)
+  const handleSubmit = async () => {
+    const req: RequisitionDTO = {
+      ...form,
+      id: requisition?.id as number,
+    } as RequisitionDTO;
+    await updateRequisition(req);
+    onSuccess?.();
+    onClose();
+  };
+
+  // Helper para filtrar duplicatas
   const filtraUnicos = <T, K extends keyof T>(arr: T[], chave: K) =>
     arr.filter(
       (item, idx, self) =>
         self.findIndex((i) => i[chave] === item[chave]) === idx,
     );
 
-  if (!isOpen) return null;
+  if (!isOpen || !requisition) return null;
 
   return (
     <ModalForm
-      titulo="Nova Requisição"
-      handleSubmit={submit}
+      titulo="Editar Requisição"
+      handleSubmit={handleSubmit}
       handleClear={handleClear}
       onClose={onClose}
-      loading={saving}
+      loading={false}
       tabs={[{ name: 'Formulário', key: 'form' }]}
       activeTab="form"
       setActiveTab={() => {}}
       renderTabContent={() => (
         <div className="grid grid-cols-2 gap-4">
-          {error && <div className="col-span-2 text-red-600 mb-2">{error}</div>}
-
           {/* CAMPO: tipo */}
           <SelectInput
             key={`tipo-${resetKey}`}
@@ -90,7 +114,7 @@ export default function RequisitionModal({
                 ? String(form.tipo)
                 : undefined
             }
-            onValueChange={(v: string | number) => onChange('tipo', String(v))}
+            onValueChange={(v: string | number) => handleChange('tipo', v)}
             required
           />
 
@@ -112,7 +136,7 @@ export default function RequisitionModal({
                 : undefined
             }
             onValueChange={(v: string | number) =>
-              onChange('localEntrega', String(v))
+              handleChange('localEntrega', v)
             }
             required
           />
@@ -134,9 +158,7 @@ export default function RequisitionModal({
                 ? String(form.destino)
                 : undefined
             }
-            onValueChange={(v: string | number) =>
-              onChange('destino', String(v))
-            }
+            onValueChange={(v: string | number) => handleChange('destino', v)}
             required
           />
 
@@ -158,7 +180,7 @@ export default function RequisitionModal({
                 : undefined
             }
             onValueChange={(v: string | number) =>
-              onChange('compradorNome', String(v))
+              handleChange('compradorNome', v)
             }
             required
           />
@@ -182,12 +204,12 @@ export default function RequisitionModal({
                 : undefined
             }
             onValueChange={(v: string | number) =>
-              onChange('fornecedorCodigo', String(v))
+              handleChange('fornecedorCodigo', v)
             }
             required
           />
 
-          {/* CAMPOS JOGADOS AO VENTO */}
+          {/* Condições de PGTO (apenas UI) */}
           <FormInput
             name="condicoesPgto"
             type="text"
@@ -199,6 +221,7 @@ export default function RequisitionModal({
             autoComplete="off"
           />
 
+          {/* Observação (apenas UI) */}
           <FormInput
             name="observacao"
             type="text"

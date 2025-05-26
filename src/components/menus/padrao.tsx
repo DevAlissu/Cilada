@@ -364,8 +364,6 @@ const PageSidebar: React.FC<PageSidebarProps> = ({ tela, permissoes }) => {
     setValorF(novoValorF);
   }, [permissoes, tela]);
 
-  // ... restante do seu código ...
-
   return (
     <div className="flex w-full    flex-col bg-muted/40">
       {/* inicio da tela desktop */}

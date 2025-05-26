@@ -16,8 +16,8 @@ interface CreateCompraBody {
   fornecedorNome?: string;
   fornecedorCpfCnpj?: string;
   compradorNome?: string;
-  localEntrega?: string;
-  destino?: string;
+  localEntrega?: string; //entrega inicial
+  destino?: string; //entrega final
 }
 
 export default async function handleCreateCompra(

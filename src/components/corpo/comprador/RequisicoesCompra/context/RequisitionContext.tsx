@@ -1,4 +1,5 @@
 // src/components/corpo/comprador/RequisicoesCompra/context/RequisitionContext.tsx
+
 import React, {
   createContext,
   useContext,
@@ -6,15 +7,20 @@ import React, {
   useEffect,
   ReactNode,
 } from 'react';
-import { RequisitionDTO } from '../types/requisition'; // <-- DTO, não Requisition
-import * as service from '../services/requisitionService'; // <-- verifique se esse arquivo exporta getAllRequisitions
+import { RequisitionDTO } from '@/data/requisicoesCompra/types/requisition';
+import {
+  getRequisicoesCompra,
+  saveRequisition,
+} from '@/data/requisicoesCompra/requisicoesCompra';
+import type { Meta } from '@/data/common/meta';
 
 interface RequisitionContextValue {
   requisitions: RequisitionDTO[];
+  meta: Meta | null;
   loading: boolean;
   error: string | null;
-  filter: string;
-  setFilter: (f: string) => void;
+  search: string;
+  setSearch: (f: string) => void;
   fetchRequisitions: () => Promise<void>;
   isModalOpen: boolean;
   openModal: (req?: RequisitionDTO) => void;
@@ -30,18 +36,28 @@ export const RequisitionProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [requisitions, setRequisitions] = useState<RequisitionDTO[]>([]);
+  const [meta, setMeta] = useState<Meta | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState('');
+  const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRequisition, setSelectedRequisition] =
     useState<RequisitionDTO | null>(null);
 
+  // ⚡️ Use page/perPage se quiser paginação, ou adapte conforme sua tela:
+  const page = 1;
+  const perPage = 10;
+
   const fetchRequisitions = async () => {
     setLoading(true);
     try {
-      const data = await service.getAllRequisitions({ filter });
+      const { data, meta } = await getRequisicoesCompra({
+        page,
+        perPage,
+        search,
+      });
       setRequisitions(data);
+      setMeta(meta);
       setError(null);
     } catch (err: any) {
       setError(err.message || 'Falha ao carregar requisições');
@@ -52,7 +68,8 @@ export const RequisitionProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     fetchRequisitions();
-  }, [filter]);
+    // eslint-disable-next-line
+  }, [search]);
 
   const openModal = (req?: RequisitionDTO) => {
     setSelectedRequisition(req ?? null);
@@ -68,10 +85,11 @@ export const RequisitionProvider: React.FC<{ children: ReactNode }> = ({
     <RequisitionContext.Provider
       value={{
         requisitions,
+        meta,
         loading,
         error,
-        filter,
-        setFilter,
+        search,
+        setSearch,
         fetchRequisitions,
         isModalOpen,
         openModal,

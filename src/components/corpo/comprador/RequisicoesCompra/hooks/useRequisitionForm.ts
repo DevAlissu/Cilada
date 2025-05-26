@@ -1,4 +1,3 @@
-// src/components/corpo/comprador/RequisicoesCompra/hooks/useRequisitionForm.ts
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import type { RequisitionDTO } from '@/data/requisicoesCompra/types/requisition';
@@ -11,7 +10,7 @@ export function useRequisitionForm(onSaved: () => void) {
   const [error, setError] = useState<string | null>(null);
 
   function open(initial?: RequisitionDTO) {
-    setForm(initial ?? {});
+    setForm(initial ? { ...initial } : {});
     setError(null);
   }
 
@@ -42,6 +41,7 @@ export function useRequisitionForm(onSaved: () => void) {
   function reset() {
     setForm({});
     setError(null);
+    setSaving(false);
   }
 
   return {

@@ -1,29 +1,30 @@
+// src/data/requisicoesCompra/types/requisition.ts
+
 /**
  * Status possíveis de uma ordem de compra
  */
-export type OrderStatus = 'Aprovada' | 'Pendente' | 'Recusada' | string;
+export type OrderStatus =
+  | 'Aprovada'
+  | 'Pendente'
+  | 'Recusada'
+  | 'Cancelada'
+  | string;
 
-/**
- * Status possíveis de uma requisição
- */
 export type RequisitionStatus =
   | 'Finalizada'
   | 'Em Andamento'
   | 'Cancelada'
   | string;
 
-/**
- * DTO alinhado com a tabela dbcompras/prisma
- */
 export interface RequisitionDTO {
   id: number;
   ordemCompra?: string;
-  dataOrdem?: string; // Date do banco, string no front
+  dataOrdem?: string;
   statusOrdem?: OrderStatus;
   requisicao?: string;
   versao?: number;
   tipo?: string;
-  dataRequisicao?: string; // Date do banco, string no front
+  dataRequisicao?: string;
   statusRequisicao?: RequisitionStatus;
   fornecedorCodigo?: string;
   fornecedorNome?: string;

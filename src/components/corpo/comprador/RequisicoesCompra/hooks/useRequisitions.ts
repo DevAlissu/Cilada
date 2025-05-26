@@ -1,5 +1,5 @@
 // src/components/corpo/comprador/RequisicoesCompra/hooks/useRequisitions.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { RequisitionDTO } from '@/data/requisicoesCompra/types/requisition';
 import type { Meta } from '@/data/common/meta';
 import { getRequisicoesCompra } from '@/data/requisicoesCompra/requisicoesCompra';
@@ -19,19 +19,26 @@ export function useRequisitions(params: {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const load = useCallback(() => {
     setLoading(true);
     setError(null);
+
     getRequisicoesCompra(params)
       .then((res) => {
         setData(res.data);
         setMeta(res.meta);
       })
-      .catch((err: any) => {
+      .catch((err) => {
         setError(err.message || 'Falha ao carregar requisições');
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+      });
   }, [params.page, params.perPage, params.search]);
 
-  return { data, meta, loading, error };
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  return { data, meta, loading, error, refetch: load };
 }

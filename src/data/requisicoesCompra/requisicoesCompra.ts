@@ -1,5 +1,3 @@
-// src/data/requisicoesCompra/requisicoesCompra.ts
-
 import api from '@/components/services/api';
 import type { RequisitionDTO } from './types/requisition';
 import type { Meta } from '../common/meta';
@@ -32,10 +30,16 @@ export async function getRequisicoesCompra({
 }
 
 /**
- * Cria ou atualiza uma requisição de compra.
+ * Cria uma requisição de compra.
  */
 export async function saveRequisition(
   requisition: RequisitionDTO,
 ): Promise<void> {
-  await api.post(`/api/requisicoesCompra/save`, requisition);
+  await api.post(`/api/requisicoesCompra/post`, requisition);
+}
+
+export async function updateRequisition(
+  requisition: RequisitionDTO,
+): Promise<void> {
+  await api.put(`/api/requisicoesCompra/update`, requisition);
 }
